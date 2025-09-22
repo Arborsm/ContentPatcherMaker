@@ -42,7 +42,6 @@ public partial class MainWindowViewModel : ViewModelBase
         JsonTree = JsonTreeBuilder.Build(JsonText);
 
         DocsEntries = new ObservableCollection<DocEntry>(_docs.Entries);
-        WindowTitle = _loc.T("app.title", "ContentPatcher Editor");
         StatusText = _loc.T("status.ready", "Ready");
     }
 

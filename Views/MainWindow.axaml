@@ -1,30 +1,37 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:ContentPatcherMaker.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
-        x:Class="ContentPatcherMaker.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="{Binding WindowTitle}">
+<Window
+    x:Class="ContentPatcherMaker.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:nm="clr-namespace:NodifyM.Avalonia.Controls;assembly=NodifyM.Avalonia"
+    xmlns:vm="using:ContentPatcherMaker.ViewModels"
+    Title="{Binding WindowTitle}"
+    d:DesignHeight="800"
+    d:DesignWidth="1200"
+    x:DataType="vm:MainWindowViewModel"
+    Icon="/Assets/avalonia-logo.ico"
+    mc:Ignorable="d">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="{Binding LocIndex[menu.file]}">
-                <MenuItem Header="{Binding LocIndex[menu.open]}" Command="{Binding OpenCommand}"/>
-                <MenuItem Header="{Binding LocIndex[menu.save]}" Command="{Binding SaveCommand}"/>
-                <MenuItem Header="{Binding LocIndex[menu.export]}" Command="{Binding ExportCommand}"/>
-                <Separator/>
+                <MenuItem Command="{Binding OpenCommand}" Header="{Binding LocIndex[menu.open]}" />
+                <MenuItem Command="{Binding SaveCommand}" Header="{Binding LocIndex[menu.save]}" />
+                <MenuItem Command="{Binding ExportCommand}" Header="{Binding LocIndex[menu.export]}" />
+                <Separator />
                 <MenuItem Header="{Binding LocIndex[menu.language]}">
                     <ItemsControl ItemsSource="{Binding Languages}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <MenuItem Header="{Binding }" Command="{Binding DataContext.ChangeLanguageCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding }"/>
+                                <MenuItem
+                                    Command="{Binding ((vm:MainWindowViewModel)DataContext).ChangeLanguageCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"
+                                    Header="{Binding}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -34,61 +41,67 @@
 
         <TabControl>
             <TabItem Header="{Binding LocIndex[tab.workflow]}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <controls:NodifyEditor xmlns:controls="clr-namespace:NodifyM.Avalonia.Controls;assembly=NodifyM.Avalonia"
-                                          x:Name="Editor"
-                                          ItemsSource="{Binding WorkflowVM.Nodes}"
-                                          Connections="{Binding WorkflowVM.Connections}"
-                                          PendingConnection="{Binding WorkflowVM.PendingConnection}"
-                                          DisconnectConnectorCommand="{Binding WorkflowVM.DisconnectConnectorCommand}"
-                                          Margin="8" Background="#202020"/>
-                    <StackPanel Grid.Column="1" Margin="8" Spacing="8">
-                        <Button Content="{Binding LocIndex[action.addChange]}" Command="{Binding AddChangeCommand}"/>
-                        <ListBox Items="{Binding Changes}"/>
+                <Grid ColumnDefinitions="2*,*">
+                    <nm:NodifyEditor
+                        x:Name="Editor"
+                        Margin="8"
+                        Background="#202020"
+                        Connections="{Binding WorkflowVM.Connections}"
+                        DisconnectConnectorCommand="{Binding WorkflowVM.DisconnectConnectorCommand}"
+                        ItemsSource="{Binding WorkflowVM.Nodes}"
+                        PendingConnection="{Binding WorkflowVM.PendingConnection}" />
+                    <StackPanel
+                        Grid.Column="1"
+                        Margin="8"
+                        Spacing="8">
+                        <Button Command="{Binding AddChangeCommand}" Content="{Binding LocIndex[action.addChange]}" />
+                        <ListBox ItemsSource="{Binding Changes}" />
                     </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="{Binding LocIndex[tab.json]}">
-                <SplitView IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="320">
+                <SplitView
+                    DisplayMode="Inline"
+                    IsPaneOpen="True"
+                    OpenPaneLength="320">
                     <SplitView.Pane>
-                        <TreeView Items="{Binding JsonTree}"/>
+                        <TreeView ItemsSource="{Binding JsonTree}" />
                     </SplitView.Pane>
                     <SplitView.Content>
                         <ScrollViewer>
-                            <TextBox Text="{Binding JsonText, Mode=TwoWay}" AcceptsReturn="True" FontFamily="Consolas, Menlo, monospace"/>
+                            <TextBox
+                                AcceptsReturn="True"
+                                FontFamily="Consolas, Menlo, monospace"
+                                Text="{Binding JsonText, Mode=TwoWay}" />
                         </ScrollViewer>
                     </SplitView.Content>
                 </SplitView>
             </TabItem>
             <TabItem Header="{Binding LocIndex[tab.preview]}">
-                <Image Source="{Binding PreviewBitmap}" Stretch="Uniform"/>
+                <Image Source="{Binding PreviewBitmap}" Stretch="Uniform" />
             </TabItem>
             <TabItem Header="{Binding LocIndex[tab.docs]}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="260"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="260" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ListBox Items="{Binding DocsEntries}" SelectedItem="{Binding SelectedDoc}" DisplayMemberPath="Title"/>
+                    <ListBox ItemsSource="{Binding DocsEntries}" SelectedItem="{Binding SelectedDoc}" />
                     <ScrollViewer Grid.Column="1">
-                        <TextBlock Text="{Binding SelectedDocText}" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding SelectedDocText}" TextWrapping="Wrap" />
                     </ScrollViewer>
                 </Grid>
             </TabItem>
             <TabItem Header="{Binding LocIndex[tab.validation]}">
                 <StackPanel Margin="8" Spacing="8">
-                    <Button Content="{Binding LocIndex[action.runValidate]}" Command="{Binding RunValidationCommand}"/>
-                    <ItemsControl Items="{Binding ValidationIssues}">
+                    <Button Command="{Binding RunValidationCommand}" Content="{Binding LocIndex[action.runValidate]}" />
+                    <ItemsControl ItemsSource="{Binding ValidationIssues}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="{Binding Code}" FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding Message}"/>
-                                    <TextBlock Text="{Binding Path}" Foreground="Gray"/>
+                                    <TextBlock FontWeight="Bold" Text="{Binding Code}" />
+                                    <TextBlock Text="{Binding Message}" />
+                                    <TextBlock Foreground="Gray" Text="{Binding Path}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
