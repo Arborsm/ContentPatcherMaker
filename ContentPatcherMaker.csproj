@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
@@ -10,7 +10,28 @@
 
     <ItemGroup>
         <Folder Include="Models\"/>
+        <Folder Include="Services\"/>
+        <Folder Include="Services\Abstractions\"/>
+        <Folder Include="Services\Localization\"/>
+        <Folder Include="Services\Docs\"/>
+        <Folder Include="Services\Plugins\"/>
+        <Folder Include="Services\Preview\"/>
+        <Folder Include="Services\Validation\"/>
+        <Folder Include="Core\"/>
+        <Folder Include="Core\Serialization\"/>
+        <Folder Include="Core\Validation\"/>
+        <Folder Include="Resources\"/>
+        <Folder Include="Resources\Locales\"/>
         <AvaloniaResource Include="Assets\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Resources\Locales\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="md\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
