@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using ContentPatcherMaker.Core.DataModels;
 
 namespace ContentPatcherMaker.Core.Models;
 
@@ -50,7 +51,7 @@ public abstract class Patch
     /// </summary>
     [Required]
     [JsonProperty("Action")]
-    public abstract string Action { get; }
+    public abstract PatchActionType Action { get; }
 
     /// <summary>
     /// 目标素材名称
@@ -75,7 +76,7 @@ public abstract class Patch
     /// 更新频率
     /// </summary>
     [JsonProperty("Update")]
-    public string? Update { get; set; }
+    public PatchUpdateFrequency? Update { get; set; }
 
     /// <summary>
     /// 局部令牌
@@ -87,7 +88,7 @@ public abstract class Patch
     /// 优先级
     /// </summary>
     [JsonProperty("Priority")]
-    public string? Priority { get; set; }
+    public PatchPriority? Priority { get; set; }
 
     /// <summary>
     /// 目标语言环境
@@ -104,7 +105,7 @@ public class LoadPatch : Patch
     /// <summary>
     /// 获取补丁操作类型
     /// </summary>
-    public override string Action => "Load";
+    public override PatchActionType Action => PatchActionType.Load;
 
     /// <summary>
     /// 源文件路径
@@ -122,7 +123,7 @@ public class EditDataPatch : Patch
     /// <summary>
     /// 获取补丁操作类型
     /// </summary>
-    public override string Action => "EditData";
+    public override PatchActionType Action => PatchActionType.EditData;
 
     /// <summary>
     /// 要编辑的字段
@@ -163,7 +164,7 @@ public class EditImagePatch : Patch
     /// <summary>
     /// 获取补丁操作类型
     /// </summary>
-    public override string Action => "EditImage";
+    public override PatchActionType Action => PatchActionType.EditImage;
 
     /// <summary>
     /// 源文件路径
@@ -188,7 +189,7 @@ public class EditImagePatch : Patch
     /// 补丁模式
     /// </summary>
     [JsonProperty("PatchMode")]
-    public string? PatchMode { get; set; }
+    public PatchMode? PatchMode { get; set; }
 }
 
 /// <summary>
@@ -199,7 +200,7 @@ public class EditMapPatch : Patch
     /// <summary>
     /// 获取补丁操作类型
     /// </summary>
-    public override string Action => "EditMap";
+    public override PatchActionType Action => PatchActionType.EditMap;
 
     /// <summary>
     /// 源文件路径
@@ -223,7 +224,7 @@ public class EditMapPatch : Patch
     /// 补丁模式
     /// </summary>
     [JsonProperty("PatchMode")]
-    public string? PatchMode { get; set; }
+    public PatchMode? PatchMode { get; set; }
 
     /// <summary>
     /// 地图属性
@@ -264,7 +265,7 @@ public class IncludePatch : Patch
     /// <summary>
     /// 获取补丁操作类型
     /// </summary>
-    public override string Action => "Include";
+    public override PatchActionType Action => PatchActionType.Include;
 
     /// <summary>
     /// 源文件路径
@@ -343,7 +344,7 @@ public class TextOperation
     /// 操作类型
     /// </summary>
     [JsonProperty("Operation")]
-    public string Operation { get; set; } = string.Empty;
+    public TextOperationType Operation { get; set; } = TextOperationType.Replace;
 
     /// <summary>
     /// 目标字段列表
@@ -373,7 +374,7 @@ public class MapTile
     /// 图层名称
     /// </summary>
     [JsonProperty("Layer")]
-    public string Layer { get; set; } = string.Empty;
+    public MapLayer Layer { get; set; } = MapLayer.Background;
 
     /// <summary>
     /// 位置信息

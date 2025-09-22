@@ -3,6 +3,7 @@ using Moq;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services;
 using ContentPatcherMaker.Core.Extensions;
+using ContentPatcherMaker.Core.DataModels;
 using Xunit.Abstractions;
 using ValidationResult = ContentPatcherMaker.Core.Validation.ValidationResult;
 
@@ -91,7 +92,7 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
         {
             Target = "Data/Events/AdventureGuild",
             FromFile = "assets/empty-event-file.json",
-            Priority = "Low"
+            Priority = PatchPriority.Low
         };
 
         // Act
@@ -206,7 +207,7 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
             [
                 new TextOperation
                 {
-                    Operation = "Append",
+                    Operation = TextOperationType.Append,
                     Target = ["Entries", "Universal_Love"],
                     Value = "127",
                     Delimiter = " "
@@ -240,7 +241,7 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
             FromFile = "assets/fish-object.png",
             FromArea = new Area { X = 0, Y = 0, Width = 16, Height = 16 },
             ToArea = new Area { X = 256, Y = 96, Width = 16, Height = 16 },
-            PatchMode = "Replace"
+            PatchMode = PatchMode.Replace
         };
 
         // Act
@@ -263,7 +264,7 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
         {
             Target = "Maps/springobjects",
             FromFile = "assets/overlay.png",
-            PatchMode = "Overlay"
+            PatchMode = PatchMode.Overlay
         };
 
         // Act
@@ -292,7 +293,7 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
             FromFile = "assets/town.tmx",
             FromArea = new Area { X = 22, Y = 61, Width = 16, Height = 13 },
             ToArea = new Area { X = 22, Y = 61, Width = 16, Height = 13 },
-            PatchMode = "Replace"
+            PatchMode = PatchMode.Replace
         };
 
         // Act
@@ -343,7 +344,7 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
             [
                 new MapTile
                 {
-                    Layer = "Back",
+                    Layer = MapLayer.Background,
                     Position = new Area { X = 72, Y = 15, Width = 1, Height = 1 },
                     SetIndex = "622"
                 }
@@ -393,17 +394,13 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
     #region Format Version Tests (基于 author-guide.md)
 
     /// <summary>
-    /// 测试不同格式版本的兼容性
+    /// 测试默认格式版本
     /// </summary>
-    [Theory]
-    [InlineData("2.8.0")]
-    [InlineData("2.7.0")]
-    [InlineData("2.6.0")]
-    [InlineData("2.5.0")]
-    public void FormatVersion_VariousVersions_ShouldWork(string formatVersion)
+    [Fact]
+    public void FormatVersion_DefaultVersion_ShouldWork()
     {
         // Arrange
-        var contentPack = _service.CreateContentPack(formatVersion);
+        var contentPack = _service.CreateContentPack();
         var loadPatch = new LoadPatch
         {
             Target = "Test/Target",
@@ -416,31 +413,9 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
 
         // Assert
         Assert.True(validationResult.IsValid);
-        Assert.Equal(formatVersion, contentPack.Format);
+        Assert.Equal("2.8.0", contentPack.Format);
     }
 
-    /// <summary>
-    /// 测试无效格式版本的验证
-    /// </summary>
-    [Fact]
-    public void FormatVersion_InvalidVersion_ShouldFailValidation()
-    {
-        // Arrange
-        var contentPack = _service.CreateContentPack("invalid-version");
-        var loadPatch = new LoadPatch
-        {
-            Target = "Test/Target",
-            FromFile = "test.png"
-        };
-
-        // Act
-        _service.AddPatch(contentPack, loadPatch);
-        var validationResult = _service.ValidateContentPack(contentPack);
-
-        // Assert
-        Assert.False(validationResult.IsValid);
-        Assert.Contains("Format版本格式无效", validationResult.Errors.First());
-    }
 
     #endregion
 
@@ -450,11 +425,11 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
     /// 测试各种优先级设置
     /// </summary>
     [Theory]
-    [InlineData("Low")]
-    [InlineData("Medium")]
-    [InlineData("High")]
-    [InlineData("Exclusive")]
-    public void Priority_VariousPriorities_ShouldWork(string priority)
+    [InlineData(PatchPriority.Low)]
+    [InlineData(PatchPriority.Normal)]
+    [InlineData(PatchPriority.High)]
+    [InlineData(PatchPriority.Highest)]
+    public void Priority_VariousPriorities_ShouldWork(PatchPriority priority)
     {
         // Arrange
         var contentPack = _service.CreateContentPack();
@@ -485,7 +460,7 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
         {
             Target = "Test/Target",
             FromFile = "test.png",
-            Priority = "InvalidPriority"
+            Priority = (PatchPriority)999 // 无效的优先级值
         };
 
         // Act
@@ -505,11 +480,10 @@ public class ContentPatcherDocumentationTests(ITestOutputHelper testOutputHelper
     /// 测试更新频率设置
     /// </summary>
     [Theory]
-    [InlineData("OnDayStart")]
-    [InlineData("OnLocationChange")]
-    [InlineData("OnTimeChange")]
-    [InlineData("OnDayStart,OnLocationChange")]
-    public void UpdateFrequency_VariousFrequencies_ShouldWork(string updateFrequency)
+    [InlineData(PatchUpdateFrequency.Daily)]
+    [InlineData(PatchUpdateFrequency.Hourly)]
+    [InlineData(PatchUpdateFrequency.Realtime)]
+    public void UpdateFrequency_VariousFrequencies_ShouldWork(PatchUpdateFrequency updateFrequency)
     {
         // Arrange
         var contentPack = _service.CreateContentPack();

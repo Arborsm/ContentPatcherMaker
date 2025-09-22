@@ -36,17 +36,17 @@ public class ContentPatcherService
     /// <summary>
     /// 创建新的内容包
     /// </summary>
-    /// <param name="format">格式版本</param>
     /// <returns>新的内容包</returns>
-    public ContentPack CreateContentPack(string format = "2.8.0")
+    public ContentPack CreateContentPack()
     {
         try
         {
-            _loggingService.LogInformation($"创建新的ContentPatcher内容包，格式版本: {format}", "ContentPatcherService");
+            const string latestFormat = "2.8.0";
+            _loggingService.LogInformation($"创建新的ContentPatcher内容包，格式版本: {latestFormat}", "ContentPatcherService");
 
             var contentPack = new ContentPack
             {
-                Format = format,
+                Format = latestFormat,
                 Changes = []
             };
 

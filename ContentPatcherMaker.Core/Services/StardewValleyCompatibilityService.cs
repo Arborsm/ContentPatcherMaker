@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services.Logging;
+using ContentPatcherMaker.Core.DataModels;
 
 namespace ContentPatcherMaker.Core.Services;
 
@@ -140,19 +141,19 @@ public partial class StardewValleyCompatibilityService
         // 根据操作类型验证特定兼容性
         switch (patch.Action)
         {
-            case "Load":
+            case PatchActionType.Load:
                 ValidateLoadPatchCompatibility((LoadPatch)patch, index, result);
                 break;
-            case "EditData":
+            case PatchActionType.EditData:
                 ValidateEditDataPatchCompatibility((EditDataPatch)patch, index, result);
                 break;
-            case "EditImage":
+            case PatchActionType.EditImage:
                 ValidateEditImagePatchCompatibility((EditImagePatch)patch, index, result);
                 break;
-            case "EditMap":
+            case PatchActionType.EditMap:
                 ValidateEditMapPatchCompatibility((EditMapPatch)patch, index, result);
                 break;
-            case "Include":
+            case PatchActionType.Include:
                 ValidateIncludePatchCompatibility((IncludePatch)patch, index, result);
                 break;
         }
@@ -186,7 +187,7 @@ public partial class StardewValleyCompatibilityService
     /// <summary>
     /// 验证Load补丁兼容性
     /// </summary>
-    private void ValidateLoadPatchCompatibility(LoadPatch patch, int index, CompatibilityResult result)
+    private static void ValidateLoadPatchCompatibility(LoadPatch patch, int index, CompatibilityResult result)
     {
         if (string.IsNullOrEmpty(patch.FromFile))
         {
@@ -194,14 +195,12 @@ public partial class StardewValleyCompatibilityService
         }
 
         // 检查文件扩展名是否支持
-        if (!string.IsNullOrEmpty(patch.FromFile))
+        if (string.IsNullOrEmpty(patch.FromFile)) return;
+        var supportedExtensions = new[] { ".png", ".json", ".tbin", ".tmx", ".xnb" };
+        var extension = Path.GetExtension(patch.FromFile).ToLower();
+        if (!supportedExtensions.Contains(extension))
         {
-            var supportedExtensions = new[] { ".png", ".json", ".tbin", ".tmx", ".xnb" };
-            var extension = System.IO.Path.GetExtension(patch.FromFile).ToLower();
-            if (!supportedExtensions.Contains(extension))
-            {
-                result.Warnings.Add($"Load补丁 {index} 的FromFile文件扩展名 '{extension}' 可能不受支持");
-            }
+            result.Warnings.Add($"Load补丁 {index} 的FromFile文件扩展名 '{extension}' 可能不受支持");
         }
     }
 
@@ -230,7 +229,7 @@ public partial class StardewValleyCompatibilityService
     /// <summary>
     /// 验证EditImage补丁兼容性
     /// </summary>
-    private void ValidateEditImagePatchCompatibility(EditImagePatch patch, int index, CompatibilityResult result)
+    private static void ValidateEditImagePatchCompatibility(EditImagePatch patch, int index, CompatibilityResult result)
     {
         if (string.IsNullOrEmpty(patch.FromFile))
         {
@@ -238,10 +237,10 @@ public partial class StardewValleyCompatibilityService
         }
 
         // 验证补丁模式
-        if (!string.IsNullOrEmpty(patch.PatchMode))
+        if (patch.PatchMode.HasValue)
         {
-            var validModes = new[] { "Replace", "Overlay" };
-            if (!validModes.Contains(patch.PatchMode))
+            var validModes = new[] { PatchMode.Replace, PatchMode.Overlay };
+            if (!validModes.Contains(patch.PatchMode.Value))
             {
                 result.Errors.Add($"EditImage补丁 {index} 的PatchMode字段包含无效值: {patch.PatchMode}");
             }
@@ -255,7 +254,7 @@ public partial class StardewValleyCompatibilityService
     /// <summary>
     /// 验证EditMap补丁兼容性
     /// </summary>
-    private void ValidateEditMapPatchCompatibility(EditMapPatch patch, int index, CompatibilityResult result)
+    private static void ValidateEditMapPatchCompatibility(EditMapPatch patch, int index, CompatibilityResult result)
     {
         // 检查是否有任何操作
         var hasAnyOperation = !string.IsNullOrEmpty(patch.FromFile) || 
@@ -271,10 +270,10 @@ public partial class StardewValleyCompatibilityService
         }
 
         // 验证补丁模式
-        if (!string.IsNullOrEmpty(patch.PatchMode))
+        if (patch.PatchMode.HasValue)
         {
-            var validModes = new[] { "Replace", "Overlay", "ReplaceByLayer" };
-            if (!validModes.Contains(patch.PatchMode))
+            var validModes = new[] { PatchMode.Replace, PatchMode.Overlay, PatchMode.Add };
+            if (!validModes.Contains(patch.PatchMode.Value))
             {
                 result.Errors.Add($"EditMap补丁 {index} 的PatchMode字段包含无效值: {patch.PatchMode}");
             }

@@ -1,6 +1,7 @@
 using Xunit;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services;
+using ContentPatcherMaker.Core.DataModels;
 
 namespace ContentPatcherMaker.Test;
 
@@ -83,7 +84,7 @@ public class ContentPatcherActionTests
         {
             Target = "Data/Events/AdventureGuild",
             FromFile = "assets/empty-event-file.json",
-            Priority = "Low"
+            Priority = PatchPriority.Low
         };
 
         // Act
@@ -177,7 +178,7 @@ public class ContentPatcherActionTests
             [
                 new TextOperation
                 {
-                    Operation = "Append",
+                    Operation = TextOperationType.Append,
                     Target = ["Entries", "Universal_Love"],
                     Value = "127",
                     Delimiter = " "
@@ -214,7 +215,7 @@ public class ContentPatcherActionTests
             FromFile = "assets/fish-object.png",
             FromArea = new Area { X = 0, Y = 0, Width = 16, Height = 16 },
             ToArea = new Area { X = 256, Y = 96, Width = 16, Height = 16 },
-            PatchMode = "Replace"
+            PatchMode = PatchMode.Replace
         };
 
         // Act
@@ -240,7 +241,7 @@ public class ContentPatcherActionTests
         {
             Target = "Maps/springobjects",
             FromFile = "assets/overlay.png",
-            PatchMode = "Overlay"
+            PatchMode = PatchMode.Overlay
         };
 
         // Act
@@ -270,7 +271,7 @@ public class ContentPatcherActionTests
             FromFile = "assets/town.tmx",
             FromArea = new Area { X = 22, Y = 61, Width = 16, Height = 13 },
             ToArea = new Area { X = 22, Y = 61, Width = 16, Height = 13 },
-            PatchMode = "Replace"
+            PatchMode = PatchMode.Replace
         };
 
         // Act
@@ -325,7 +326,7 @@ public class ContentPatcherActionTests
             [
                 new MapTile
                 {
-                    Layer = "Back",
+                    Layer = MapLayer.Background,
                     Position = new Area { X = 72, Y = 15 },
                     SetIndex = "622"
                 }
@@ -338,7 +339,7 @@ public class ContentPatcherActionTests
 
         // Assert
         Assert.Contains("\"MapTiles\":", json);
-        Assert.Contains("\"Layer\": \"Back\"", json);
+        Assert.Contains("\"Layer\": \"Background\"", json);
         Assert.Contains("\"SetIndex\": \"622\"", json);
     }
 
@@ -409,7 +410,7 @@ public class ContentPatcherActionTests
         {
             Target = "Maps/springobjects",
             FromFile = "assets/custom-object.png",
-            PatchMode = "Replace"
+            PatchMode = PatchMode.Replace
         });
 
         // Include操作

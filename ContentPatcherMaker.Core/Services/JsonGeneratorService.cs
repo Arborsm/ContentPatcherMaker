@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services.Logging;
+using ContentPatcherMaker.Core.DataModels;
 
 namespace ContentPatcherMaker.Core.Services;
 
@@ -24,7 +25,7 @@ public class JsonGeneratorService
         {
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Include,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             Converters = { new Newtonsoft.Json.Converters.StringEnumConverter() }
         };
@@ -234,8 +235,9 @@ public class JsonGeneratorService
         if (patch == null)
             throw new InvalidOperationException($"补丁 {index} 不能为空");
 
-        if (string.IsNullOrEmpty(patch.Action))
-            throw new InvalidOperationException($"补丁 {index} 的Action字段不能为空");
+        // Action是枚举类型，检查是否为有效的枚举值
+        if (!Enum.IsDefined(typeof(PatchActionType), patch.Action))
+            throw new InvalidOperationException($"补丁 {index} 的Action字段包含无效值: {patch.Action}");
 
         if (string.IsNullOrEmpty(patch.Target))
             throw new InvalidOperationException($"补丁 {index} 的Target字段不能为空");
@@ -243,19 +245,19 @@ public class JsonGeneratorService
         // 根据操作类型验证特定字段
         switch (patch.Action)
         {
-            case "Load":
+            case PatchActionType.Load:
                 ValidateLoadPatch((LoadPatch)patch, index);
                 break;
-            case "EditData":
+            case PatchActionType.EditData:
                 ValidateEditDataPatch((EditDataPatch)patch, index);
                 break;
-            case "EditImage":
+            case PatchActionType.EditImage:
                 ValidateEditImagePatch((EditImagePatch)patch, index);
                 break;
-            case "EditMap":
+            case PatchActionType.EditMap:
                 ValidateEditMapPatch((EditMapPatch)patch, index);
                 break;
-            case "Include":
+            case PatchActionType.Include:
                 ValidateIncludePatch((IncludePatch)patch, index);
                 break;
         }
@@ -328,7 +330,7 @@ public class JsonGeneratorService
         }
 
         // 验证补丁操作类型
-        var validActions = new[] { "Load", "EditData", "EditImage", "EditMap", "Include" };
+        var validActions = new[] { PatchActionType.Load, PatchActionType.EditData, PatchActionType.EditImage, PatchActionType.EditMap, PatchActionType.Include };
         for (int i = 0; i < contentPack.Changes.Count; i++)
         {
             var patch = contentPack.Changes[i];

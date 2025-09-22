@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using ContentPatcherMaker.Core.Models;
+using ContentPatcherMaker.Core.DataModels;
 
 namespace ContentPatcherMaker.Core.Validation;
 
@@ -99,19 +100,19 @@ public class ContentPatcherValidator
         // 根据操作类型验证特定字段
         switch (patch.Action)
         {
-            case "Load":
+            case PatchActionType.Load:
                 ValidateLoadPatch((LoadPatch)patch, index);
                 break;
-            case "EditData":
+            case PatchActionType.EditData:
                 ValidateEditDataPatch((EditDataPatch)patch, index);
                 break;
-            case "EditImage":
+            case PatchActionType.EditImage:
                 ValidateEditImagePatch((EditImagePatch)patch, index);
                 break;
-            case "EditMap":
+            case PatchActionType.EditMap:
                 ValidateEditMapPatch((EditMapPatch)patch, index);
                 break;
-            case "Include":
+            case PatchActionType.Include:
                 ValidateIncludePatch((IncludePatch)patch, index);
                 break;
             default:
@@ -131,25 +132,20 @@ public class ContentPatcherValidator
         }
 
         // 验证更新频率
-        if (!string.IsNullOrEmpty(patch.Update))
+        if (patch.Update.HasValue)
         {
-            var validUpdates = new[] { "OnDayStart", "OnLocationChange", "OnTimeChange" };
-            var updates = patch.Update.Split(',').Select(u => u.Trim());
-                
-            foreach (var update in updates)
+            var validUpdates = new[] { PatchUpdateFrequency.Daily, PatchUpdateFrequency.Hourly, PatchUpdateFrequency.Realtime };
+            if (!validUpdates.Contains(patch.Update.Value))
             {
-                if (!validUpdates.Contains(update))
-                {
-                    AddValidationError($"补丁 {index} 的Update字段包含无效值: {update}", ValidationSeverity.Error);
-                }
+                AddValidationError($"补丁 {index} 的Update字段包含无效值: {patch.Update}", ValidationSeverity.Error);
             }
         }
 
         // 验证优先级
-        if (!string.IsNullOrEmpty(patch.Priority))
+        if (patch.Priority.HasValue)
         {
-            var validPriorities = new[] { "Early", "Default", "Late", "Low", "Medium", "High", "Exclusive" };
-            if (!validPriorities.Contains(patch.Priority))
+            var validPriorities = new[] { PatchPriority.Normal, PatchPriority.Low, PatchPriority.High, PatchPriority.Lowest, PatchPriority.Highest };
+            if (!validPriorities.Contains(patch.Priority.Value))
             {
                 AddValidationError($"补丁 {index} 的Priority字段包含无效值: {patch.Priority}", ValidationSeverity.Error);
             }
@@ -210,10 +206,10 @@ public class ContentPatcherValidator
         }
 
         // 验证补丁模式
-        if (!string.IsNullOrEmpty(patch.PatchMode))
+        if (patch.PatchMode.HasValue)
         {
-            var validModes = new[] { "Replace", "Overlay" };
-            if (!validModes.Contains(patch.PatchMode))
+            var validModes = new[] { PatchMode.Replace, PatchMode.Overlay };
+            if (!validModes.Contains(patch.PatchMode.Value))
             {
                 AddValidationError($"EditImage补丁 {index} 的PatchMode字段包含无效值: {patch.PatchMode}", ValidationSeverity.Error);
             }
@@ -243,10 +239,10 @@ public class ContentPatcherValidator
         }
 
         // 验证补丁模式
-        if (!string.IsNullOrEmpty(patch.PatchMode))
+        if (patch.PatchMode.HasValue)
         {
-            var validModes = new[] { "Replace", "Overlay", "ReplaceByLayer" };
-            if (!validModes.Contains(patch.PatchMode))
+            var validModes = new[] { PatchMode.Replace, PatchMode.Overlay, PatchMode.Add };
+            if (!validModes.Contains(patch.PatchMode.Value))
             {
                 AddValidationError($"EditMap补丁 {index} 的PatchMode字段包含无效值: {patch.PatchMode}", ValidationSeverity.Error);
             }
@@ -311,12 +307,7 @@ public class ContentPatcherValidator
     /// </summary>
     private void ValidateTextOperation(TextOperation textOp, int patchIndex)
     {
-        if (string.IsNullOrEmpty(textOp.Operation))
-        {
-            AddValidationError($"补丁 {patchIndex} 的TextOperation缺少Operation字段", ValidationSeverity.Error);
-        }
-
-        var validOperations = new[] { "Append", "Prepend", "Replace", "Remove" };
+        var validOperations = new[] { TextOperationType.Append, TextOperationType.Prepend, TextOperationType.Replace };
         if (!validOperations.Contains(textOp.Operation))
         {
             AddValidationError($"补丁 {patchIndex} 的TextOperation包含无效操作: {textOp.Operation}", ValidationSeverity.Error);
@@ -346,9 +337,10 @@ public class ContentPatcherValidator
     /// </summary>
     private void ValidateMapTile(MapTile tile, int patchIndex)
     {
-        if (string.IsNullOrEmpty(tile.Layer))
+        var validLayers = new[] { MapLayer.Background, MapLayer.Buildings, MapLayer.Foreground, MapLayer.AlwaysFront };
+        if (!validLayers.Contains(tile.Layer))
         {
-            AddValidationError($"补丁 {patchIndex} 的MapTile缺少Layer字段", ValidationSeverity.Error);
+            AddValidationError($"补丁 {patchIndex} 的MapTile包含无效的Layer字段: {tile.Layer}", ValidationSeverity.Error);
         }
 
         if (tile.Position == null)

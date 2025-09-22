@@ -6,6 +6,7 @@
 
 ### ✅ 核心功能
 - **完整的ContentPatcher数据模型** - 支持所有ContentPatcher操作类型（Load、EditData、EditImage、EditMap、Include）
+- **动态数据模型系统** - 从JSON文件动态加载游戏数据，支持代码补全和前端选择
 - **完善的参数验证机制** - 严格验证所有输入参数，确保生成的JSON符合ContentPatcher规范
 - **错误处理和日志记录** - 提供详细的错误信息和日志记录，便于调试和问题排查
 - **JSON生成和解析** - 自动生成符合ContentPatcher规范的JSON格式输出文件
@@ -16,6 +17,7 @@
 - **自定义令牌支持** - 支持注册自定义令牌提供者
 - **自定义验证规则** - 支持注册自定义验证规则
 - **自定义输出格式化器** - 支持注册自定义输出格式化器
+- **数据模型加载器** - 支持注册自定义数据模型加载器
 
 ## 架构设计
 
@@ -25,6 +27,18 @@
 Core/
 ├── Models/                    # 数据模型
 │   └── ContentPatcherModels.cs
+├── DataModels/               # 动态数据模型系统
+│   ├── IDataModel.cs         # 数据模型接口
+│   ├── Enums.cs              # 枚举定义
+│   ├── AchievementData.cs    # 成就数据模型
+│   ├── FarmData.cs           # 农场数据模型
+│   ├── CharacterData.cs      # 角色数据模型
+│   ├── EventData.cs          # 事件数据模型
+│   ├── FestivalData.cs       # 节日数据模型
+│   ├── LanguageData.cs       # 语言数据模型
+│   ├── JsonDataLoader.cs     # JSON加载器
+│   ├── DataModelManager.cs   # 数据模型管理器
+│   └── ValidationResult.cs   # 验证结果
 ├── Validation/                # 验证逻辑
 │   └── ContentPatcherValidator.cs
 ├── Services/                  # 核心服务
@@ -35,11 +49,9 @@ Core/
 │   │   └── ErrorHandlingService.cs
 │   └── Logging/               # 日志服务
 │       └── LoggingService.cs
-├── Extensions/                # 扩展API
-│   ├── IExtensionApi.cs      # 扩展接口定义
-│   └── ExtensionApiService.cs # 扩展服务实现
-└── Examples/                  # 使用示例
-    └── ContentPatcherExample.cs
+└── Extensions/                # 扩展API
+    ├── IExtensionApi.cs      # 扩展接口定义
+    └── ExtensionApiService.cs # 扩展服务实现
 ```
 
 ## 快速开始
@@ -50,7 +62,7 @@ Core/
 var service = new ContentPatcherService();
 
 // 创建新的内容包
-var contentPack = service.CreateContentPack("2.8.0");
+var contentPack = service.CreateContentPack();
 ```
 
 ### 2. 添加补丁
@@ -107,6 +119,49 @@ var json = service.GenerateJson(contentPack);
 service.SaveContentPack(contentPack, "my-content-pack.json");
 ```
 
+## 数据模型系统
+
+### 动态数据加载
+
+系统支持从JSON文件动态加载游戏数据，提供类型安全和代码补全支持：
+
+```csharp
+// 创建数据模型管理器
+var jsonLoader = new JsonDataLoader(loggingService, contentPath);
+var dataManager = new DataModelManager(jsonLoader, loggingService);
+
+// 加载所有数据
+await dataManager.LoadAllDataAsync();
+
+// 获取成就数据
+var achievements = dataManager.GetModels<AchievementData>("Achievements");
+var allAchievements = achievements?.Models;
+var specificAchievement = achievements?.GetById("0");
+```
+
+### 支持的数据类型
+
+- **成就数据** (`AchievementData`) - 游戏成就信息
+- **农场数据** (`FarmData`) - 农场类型信息
+- **角色数据** (`CharacterData`) - 角色信息和日程
+- **事件数据** (`EventData`) - 游戏事件信息
+- **节日数据** (`FestivalData`) - 节日和庆典信息
+- **语言数据** (`LanguageData`) - 多语言支持
+
+### 枚举类型
+
+系统提供了完整的枚举类型支持，确保类型安全：
+
+- `PatchActionType` - 补丁操作类型
+- `PatchUpdateFrequency` - 补丁更新频率
+- `PatchPriority` - 补丁优先级
+- `PatchMode` - 补丁模式
+- `TextOperationType` - 文本操作类型
+- `MapLayer` - 地图图层
+- `CharacterType` - 角色类型
+- `EventType` - 事件类型
+- `FestivalType` - 节日类型
+
 ## 支持的补丁类型
 
 ### Load 补丁
@@ -117,7 +172,7 @@ var loadPatch = new LoadPatch
 {
     Target = "Portraits/Abigail",
     FromFile = "assets/abigail.png",
-    Priority = "High",
+    Priority = PatchPriority.High,
     When = new Dictionary<string, string>
     {
         ["Season"] = "Spring"
@@ -161,7 +216,7 @@ var editImagePatch = new EditImagePatch
     FromFile = "assets/fish-object.png",
     FromArea = new Area { X = 0, Y = 0, Width = 16, Height = 16 },
     ToArea = new Area { X = 256, Y = 96, Width = 16, Height = 16 },
-    PatchMode = "Replace"
+    PatchMode = PatchMode.Replace
 };
 ```
 
@@ -216,53 +271,14 @@ var customValidationRule = new CustomValidationRule();
 extensionApi.RegisterValidationRule("CustomRule", customValidationRule);
 ```
 
-### 注册自定义补丁类型
+### 注册自定义数据模型加载器
 
 ```csharp
-var customValidator = new CustomPatchValidator();
-var customProcessor = new CustomPatchProcessor();
-extensionApi.RegisterCustomPatchType("CustomAction", customValidator, customProcessor);
-```
+var customLoader = new CustomDataModelLoader();
+extensionApi.RegisterDataModelLoader<CustomData>("CustomData", customLoader);
 
-## 错误处理和日志
-
-### 错误处理
-
-```csharp
-var errorService = service.GetErrorHandlingService();
-
-// 检查是否有错误
-if (errorService.HasErrors())
-{
-    var errors = errorService.GetErrors();
-    foreach (var error in errors)
-    {
-        Console.WriteLine($"错误: {error}");
-    }
-}
-
-// 获取错误摘要
-var summary = errorService.GetSummary();
-Console.WriteLine($"错误数量: {summary.ErrorCount}");
-```
-
-### 日志记录
-
-```csharp
-var loggingService = service.GetLoggingService();
-
-// 设置日志级别
-loggingService.SetMinimumLevel(LogLevel.Information);
-
-// 获取最近的日志
-var recentLogs = loggingService.GetRecentLogs(50);
-foreach (var log in recentLogs)
-{
-    Console.WriteLine(log.ToString());
-}
-
-// 导出日志到文件
-loggingService.ExportToFile("logs.txt", LogLevel.Debug);
+// 获取数据模型
+var customModel = extensionApi.GetDataModel<CustomData>("CustomData");
 ```
 
 ## 验证规则
@@ -287,22 +303,10 @@ loggingService.ExportToFile("logs.txt", LogLevel.Debug);
 - 弃用功能的警告
 - 游戏版本兼容性
 
-## 示例程序
-
-运行示例程序来了解系统的使用方法：
-
-```csharp
-var example = new ContentPatcherExample();
-example.RunAllExamples();
-example.ExtensionApiExample();
-example.ErrorHandlingExample();
-```
-
 ## 技术规范
 
-### ContentPatcher格式版本支持
-- 支持格式版本 1.0.0 到 2.8.0
-- 推荐使用最新版本 2.8.0
+### ContentPatcher格式支持
+- 自动使用最新格式版本
 - 自动验证版本兼容性
 
 ### JSON输出格式
@@ -310,6 +314,7 @@ example.ErrorHandlingExample();
 - 支持缩进格式化
 - 自动忽略null值
 - 符合ContentPatcher规范
+- 枚举类型序列化为字符串
 
 ### 错误处理
 - 详细的错误信息
@@ -327,10 +332,16 @@ example.ErrorHandlingExample();
 
 ## 更新日志
 
+### v2.0.0
+- 添加动态数据模型系统
+- 支持从JSON文件加载游戏数据
+- 增强类型安全性和代码补全
+- 优化枚举类型支持
+- 改进扩展API功能
+
 ### v1.0.0
 - 初始版本发布
 - 支持所有ContentPatcher操作类型
 - 完整的验证和错误处理机制
 - 扩展API接口
 - Stardew Valley兼容性验证
-
