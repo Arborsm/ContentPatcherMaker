@@ -1,0 +1,17 @@
+{
+  "app.title": "ContentPatcher 可视化编辑器",
+  "menu.file": "文件",
+  "menu.open": "打开",
+  "menu.save": "保存",
+  "menu.export": "导出",
+  "menu.language": "语言",
+  "tab.workflow": "工作流",
+  "tab.json": "JSON编辑",
+  "tab.preview": "预览",
+  "tab.docs": "文档",
+  "tab.validation": "验证",
+  "action.addChange": "添加修改",
+  "action.runValidate": "运行验证",
+  "status.ready": "就绪"
+}
+
