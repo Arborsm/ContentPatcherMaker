@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ContentPatcherMaker.ViewModels"
+             x:Class="ContentPatcherMaker.Views.WorkflowView"
+             x:DataType="vm:WorkflowViewModel"
+             mc:Ignorable="d">
+  <Grid ColumnDefinitions="2*,3*" RowDefinitions="Auto,*" >
+    <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="8">
+      <Button Content="{DynamicResource WF.AddPatch}" Command="{Binding AddPatchCommand}"/>
+      <Button Content="{DynamicResource WF.RemovePatch}" Command="{Binding RemoveSelectedPatchCommand}"/>
+      <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}" Margin="16,0,0,0">
+        <TabItem Header="{DynamicResource WF.Edit}" />
+        <TabItem Header="{DynamicResource WF.Validate}" />
+        <TabItem Header="{DynamicResource WF.Preview}" />
+      </TabControl>
+    </StackPanel>
+
+    <Grid Grid.Column="0" Grid.Row="1" RowDefinitions="Auto,*" Margin="8" >
+      <TextBlock Text="{DynamicResource WF.PatchList}" FontWeight="Bold"/>
+      <ListBox Grid.Row="1" ItemsSource="{Binding Patches}" SelectedItem="{Binding SelectedPatch, Mode=TwoWay}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="{Binding Action}"/>
+              <TextBlock Text="{Binding Target}"/>
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
+
+    <Grid Grid.Column="1" Grid.Row="1" RowDefinitions="*">
+      <TabControl SelectedIndex="{Binding SelectedTabIndex}">
+        <TabItem Header="编辑">
+          <ScrollViewer>
+            <StackPanel Margin="8" Spacing="8">
+              <TextBlock Text="{DynamicResource WF.PatchProps}" FontWeight="Bold"/>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Width="100" VerticalAlignment="Center" Text="{DynamicResource WF.Action}"/>
+                <TextBox Width="240" Text="{Binding SelectedPatch.Action, Mode=TwoWay}"/>
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Width="100" VerticalAlignment="Center" Text="{DynamicResource WF.Target}"/>
+                <TextBox Width="240" Text="{Binding SelectedPatch.Target, Mode=TwoWay}"/>
+              </StackPanel>
+
+              <TextBlock Text="{DynamicResource WF.Fields}" FontWeight="Bold"/>
+              <StackPanel>
+                <ItemsControl ItemsSource="{Binding FieldEntries}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
+                        <TextBox Width="160" Watermark="Key" Text="{Binding Key, Mode=TwoWay}"/>
+                        <TextBox Width="240" Watermark="Value" Text="{Binding Value, Mode=TwoWay}"/>
+                        <Button Content="{DynamicResource WF.Delete}" Command="{Binding DataContext.RemoveFieldEntryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding .}"/>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Button Content="{DynamicResource WF.Field.Add}" Command="{Binding AddFieldEntryCommand}"/>
+                  <Button Content="{DynamicResource WF.Field.Apply}" Command="{Binding ApplyFieldEntriesCommand}"/>
+                </StackPanel>
+              </StackPanel>
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="校验">
+          <DataGrid Items="{Binding ValidationErrors}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="字段" Binding="{Binding FieldPath}"/>
+              <DataGridTextColumn Header="消息" Binding="{Binding Message}"/>
+            </DataGrid.Columns>
+          </DataGrid>
+        </TabItem>
+
+        <TabItem Header="预览">
+          <ScrollViewer>
+            <TextBox TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" Text="{Binding LivePreviewJson}"/>
+          </ScrollViewer>
+        </TabItem>
+      </TabControl>
+    </Grid>
+  </Grid>
+</UserControl>
+

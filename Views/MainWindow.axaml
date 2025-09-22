@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ContentPatcherMaker.ViewModels"
+        xmlns:views="using:ContentPatcherMaker.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -29,35 +30,13 @@
                 <ComboBoxItem>en-US</ComboBoxItem>
             </ComboBox>
         </StackPanel>
-        <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="2*,*" RowDefinitions="Auto,*,Auto" Margin="8" >
-            <StackPanel Orientation="Vertical" Grid.Column="0" Grid.RowSpan="2" Spacing="8">
-                <TextBlock Text="Manifest" FontWeight="Bold"/>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Width="100" VerticalAlignment="Center" Text="Name"/>
-                    <TextBox Width="240" Text="{Binding CurrentPack.Manifest.Name, Mode=TwoWay}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Width="100" VerticalAlignment="Center" Text="Author"/>
-                    <TextBox Width="240" Text="{Binding CurrentPack.Manifest.Author, Mode=TwoWay}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Width="100" VerticalAlignment="Center" Text="UniqueID"/>
-                    <TextBox Width="240" Text="{Binding CurrentPack.Manifest.UniqueID, Mode=TwoWay}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Width="100" VerticalAlignment="Center" Text="Description"/>
-                    <TextBox Width="240" Text="{Binding CurrentPack.Manifest.Description, Mode=TwoWay}"/>
-                </StackPanel>
-                <Button Content="Export" Command="{Binding ExportPackCommand}" Width="120"/>
-            </StackPanel>
-            <Grid Grid.Column="1" Grid.RowSpan="2" RowDefinitions="Auto,*" >
-                <TextBlock Text="Preview" FontWeight="Bold"/>
-                <ScrollViewer Grid.Row="1">
-                    <TextBox TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" Text="{Binding LivePreviewJson}"/>
-                </ScrollViewer>
-            </Grid>
-            <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Grid>
+        <ContentControl Grid.Row="2" Grid.ColumnSpan="2" Content="{Binding}">
+            <ContentControl.ContentTemplate>
+                <DataTemplate>
+                    <views:WorkflowView />
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
     </Grid>
 
 </Window>

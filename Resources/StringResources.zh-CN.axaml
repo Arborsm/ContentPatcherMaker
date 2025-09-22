@@ -6,5 +6,18 @@
   <x:String x:Key="Menu.Edit">编辑</x:String>
   <x:String x:Key="Menu.View">视图</x:String>
   <x:String x:Key="Menu.Help">帮助</x:String>
+  <x:String x:Key="WF.AddPatch">新增补丁</x:String>
+  <x:String x:Key="WF.RemovePatch">删除补丁</x:String>
+  <x:String x:Key="WF.Edit">编辑</x:String>
+  <x:String x:Key="WF.Validate">校验</x:String>
+  <x:String x:Key="WF.Preview">预览</x:String>
+  <x:String x:Key="WF.PatchList">补丁列表</x:String>
+  <x:String x:Key="WF.PatchProps">补丁属性</x:String>
+  <x:String x:Key="WF.Action">Action</x:String>
+  <x:String x:Key="WF.Target">Target</x:String>
+  <x:String x:Key="WF.Fields">Fields</x:String>
+  <x:String x:Key="WF.Field.Add">新增字段</x:String>
+  <x:String x:Key="WF.Field.Apply">应用到补丁</x:String>
+  <x:String x:Key="WF.Delete">删除</x:String>
 </ResourceDictionary>
 

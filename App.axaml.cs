@@ -43,6 +43,7 @@ public partial class App : Application
     {
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<WorkflowViewModel>();
 
         // 基础服务
         services.AddSingleton<Services.Abstractions.IAppLogger, Services.Logging.SimpleConsoleLogger>();

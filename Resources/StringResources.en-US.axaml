@@ -6,5 +6,18 @@
   <x:String x:Key="Menu.Edit">Edit</x:String>
   <x:String x:Key="Menu.View">View</x:String>
   <x:String x:Key="Menu.Help">Help</x:String>
+  <x:String x:Key="WF.AddPatch">Add Patch</x:String>
+  <x:String x:Key="WF.RemovePatch">Remove Patch</x:String>
+  <x:String x:Key="WF.Edit">Edit</x:String>
+  <x:String x:Key="WF.Validate">Validate</x:String>
+  <x:String x:Key="WF.Preview">Preview</x:String>
+  <x:String x:Key="WF.PatchList">Patch List</x:String>
+  <x:String x:Key="WF.PatchProps">Patch Properties</x:String>
+  <x:String x:Key="WF.Action">Action</x:String>
+  <x:String x:Key="WF.Target">Target</x:String>
+  <x:String x:Key="WF.Fields">Fields</x:String>
+  <x:String x:Key="WF.Field.Add">Add Field</x:String>
+  <x:String x:Key="WF.Field.Apply">Apply to Patch</x:String>
+  <x:String x:Key="WF.Delete">Delete</x:String>
 </ResourceDictionary>
 
