@@ -306,7 +306,7 @@ example.ErrorHandlingExample();
 - 自动验证版本兼容性
 
 ### JSON输出格式
-- 使用System.Text.Json进行序列化
+- 使用Newtonsoft.Json进行序列化
 - 支持缩进格式化
 - 自动忽略null值
 - 符合ContentPatcher规范
