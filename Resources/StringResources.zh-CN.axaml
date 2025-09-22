@@ -1,0 +1,10 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:String x:Key="App.Title">ContentPatcherMaker</x:String>
+  <x:String x:Key="Main.Greeting">欢迎使用 ContentPatcherMaker!</x:String>
+  <x:String x:Key="Menu.File">文件</x:String>
+  <x:String x:Key="Menu.Edit">编辑</x:String>
+  <x:String x:Key="Menu.View">视图</x:String>
+  <x:String x:Key="Menu.Help">帮助</x:String>
+</ResourceDictionary>
+

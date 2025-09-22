@@ -7,7 +7,7 @@
         x:Class="ContentPatcherMaker.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="ContentPatcherMaker">
+        Title="{DynamicResource App.Title}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -15,6 +15,49 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,Auto">
+        <Menu>
+            <MenuItem Header="{DynamicResource Menu.File}" />
+            <MenuItem Header="{DynamicResource Menu.Edit}" />
+            <MenuItem Header="{DynamicResource Menu.View}" />
+            <MenuItem Header="{DynamicResource Menu.Help}" />
+        </Menu>
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8" Spacing="8">
+            <TextBlock Text="Lang:" VerticalAlignment="Center"/>
+            <ComboBox Width="160" SelectedItem="{Binding CurrentLanguage, Mode=TwoWay}">
+                <ComboBoxItem>zh-CN</ComboBoxItem>
+                <ComboBoxItem>en-US</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+        <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="2*,*" RowDefinitions="Auto,*,Auto" Margin="8" >
+            <StackPanel Orientation="Vertical" Grid.Column="0" Grid.RowSpan="2" Spacing="8">
+                <TextBlock Text="Manifest" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Width="100" VerticalAlignment="Center" Text="Name"/>
+                    <TextBox Width="240" Text="{Binding CurrentPack.Manifest.Name, Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Width="100" VerticalAlignment="Center" Text="Author"/>
+                    <TextBox Width="240" Text="{Binding CurrentPack.Manifest.Author, Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Width="100" VerticalAlignment="Center" Text="UniqueID"/>
+                    <TextBox Width="240" Text="{Binding CurrentPack.Manifest.UniqueID, Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Width="100" VerticalAlignment="Center" Text="Description"/>
+                    <TextBox Width="240" Text="{Binding CurrentPack.Manifest.Description, Mode=TwoWay}"/>
+                </StackPanel>
+                <Button Content="Export" Command="{Binding ExportPackCommand}" Width="120"/>
+            </StackPanel>
+            <Grid Grid.Column="1" Grid.RowSpan="2" RowDefinitions="Auto,*" >
+                <TextBlock Text="Preview" FontWeight="Bold"/>
+                <ScrollViewer Grid.Row="1">
+                    <TextBox TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" Text="{Binding LivePreviewJson}"/>
+                </ScrollViewer>
+            </Grid>
+            <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+    </Grid>
 
 </Window>

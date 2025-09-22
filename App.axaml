@@ -11,5 +11,11 @@
   
     <Application.Styles>
         <FluentTheme />
+        <!-- 预留本地化资源字典位置 -->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://ContentPatcherMaker/Resources/StringResources.zh-CN.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Styles>
 </Application>
