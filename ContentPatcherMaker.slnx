@@ -1,0 +1,5 @@
+﻿<Solution>
+  <Project Path="ContentPatcherMaker.Test\ContentPatcherMaker.Test.csproj" Type="Classic C#" />
+  <Project Path="ContentPatcherMaker.UI\ContentPatcherMaker.UI.csproj" Type="Classic C#" />
+  <Project Path="ContentPatcherMaker.Core\ContentPatcherMaker.Core.csproj" Type="Classic C#" />
+</Solution>

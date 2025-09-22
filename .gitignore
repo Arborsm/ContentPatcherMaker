@@ -1,6 +1,8 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
 /.idea/
+
+/ContentPatcherMaker.Core/bin/
+/ContentPatcherMaker.Core/obj/
+/ContentPatcherMaker.UI/bin/
+/ContentPatcherMaker.UI/obj/
+/ContentPatcherMaker.Test/bin/
+/ContentPatcherMaker.Test/obj/
