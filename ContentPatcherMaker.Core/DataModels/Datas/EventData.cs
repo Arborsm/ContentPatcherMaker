@@ -85,7 +85,7 @@ public record EventData
     /// 相关角色
     /// </summary>
     [JsonProperty("characters")]
-    public List<string> Characters { get; set; } = new();
+    public List<string> Characters { get; set; } = [];
 
     /// <summary>
     /// 事件位置
@@ -115,13 +115,13 @@ public record EventData
     /// 前置事件
     /// </summary>
     [JsonProperty("prerequisites")]
-    public List<string> Prerequisites { get; set; } = new();
+    public List<string> Prerequisites { get; set; } = [];
 
     /// <summary>
     /// 后续事件
     /// </summary>
     [JsonProperty("followUpEvents")]
-    public List<string> FollowUpEvents { get; set; } = new();
+    public List<string> FollowUpEvents { get; set; } = [];
 
     /// <summary>
     /// 验证事件数据
@@ -277,7 +277,7 @@ public class EventDataCollection : DataModelCollection<EventData>
     public IEnumerable<EventData> GetPrerequisiteEvents(string eventId)
     {
         var evt = GetById(eventId);
-        if (evt == null) return Enumerable.Empty<EventData>();
+        if (evt == null) return [];
 
         return evt.Prerequisites
             .Select(prereqId => GetById(prereqId))
@@ -292,7 +292,7 @@ public class EventDataCollection : DataModelCollection<EventData>
     public IEnumerable<EventData> GetFollowUpEvents(string eventId)
     {
         var evt = GetById(eventId);
-        if (evt == null) return Enumerable.Empty<EventData>();
+        if (evt == null) return [];
 
         return evt.FollowUpEvents
             .Select(followUpId => GetById(followUpId))

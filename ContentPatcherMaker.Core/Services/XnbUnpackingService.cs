@@ -21,14 +21,14 @@ public class XnbUnpackingService
     public XnbUnpackingService(LoggingService loggingService)
     {
         _loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
-        _assetWriters = new List<IAssetWriter>
-        {
+        _assetWriters =
+        [
             new DataAssetWriter(),
             new TextureAssetWriter(),
             new MapAssetWriter(),
             new SpriteFontAssetWriter(),
             new XmlAssetWriter()
-        };
+        ];
     }
 
     /// <summary>
