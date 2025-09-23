@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
-namespace ContentPatcherMaker.Core.DataModels;
+namespace ContentPatcherMaker.Core.DataModels.Datas;
 
 /// <summary>
 /// 角色类型枚举

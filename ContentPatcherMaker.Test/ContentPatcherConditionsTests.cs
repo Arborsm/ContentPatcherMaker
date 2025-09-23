@@ -1,4 +1,3 @@
-using ContentPatcherMaker.Core.Extensions;
 using ContentPatcherMaker.Core.Services;
 using ContentPatcherMaker.Core.Validation;
 using Moq;
@@ -12,12 +11,10 @@ namespace ContentPatcherMaker.Test;
 public class ContentPatcherConditionsTests
 {
     private readonly ContentPatcherService _service;
-    private readonly IExtensionApi _extensionApi;
 
     public ContentPatcherConditionsTests()
     {
         _service = new ContentPatcherService();
-        _extensionApi = _service.GetExtensionApi();
     }
 
     #region Token Context Tests (基于 conditions-api.md)

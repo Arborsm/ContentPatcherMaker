@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace ContentPatcherMaker.Core.DataModels;
+namespace ContentPatcherMaker.Core.DataModels.Datas;
 
 /// <summary>
 /// 成就数据模型

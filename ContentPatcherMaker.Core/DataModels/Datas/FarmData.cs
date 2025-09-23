@@ -1,6 +1,6 @@
 using StardewValley.GameData;
 
-namespace ContentPatcherMaker.Core.DataModels;
+namespace ContentPatcherMaker.Core.DataModels.Datas;
 
 /// <summary>
 /// 农场数据集合

@@ -30,4 +30,8 @@
     <Reference Include="SMAPI.Toolkit.CoreInterfaces" HintPath="$(GamePath)\smapi-public\SMAPI.Toolkit.CoreInterfaces.dll" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="DataModels\DataModelManager.cs" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,6 @@
-﻿namespace ContentPatcherMaker.Core.DataModels;
+﻿using ContentPatcherMaker.Core.Services;
+
+namespace ContentPatcherMaker.Core.DataModels;
 
 /// <summary>
 /// 数据模型集合基类

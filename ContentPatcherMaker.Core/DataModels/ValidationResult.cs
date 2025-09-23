@@ -1,3 +1,5 @@
+// ReSharper disable All
+
 namespace ContentPatcherMaker.Core.DataModels;
 
 /// <summary>
@@ -13,12 +15,12 @@ public class ValidationResult
     /// <summary>
     /// 错误列表
     /// </summary>
-    public List<string> Errors { get; set; } = new();
+    public List<string> Errors { get; set; } = [];
 
     /// <summary>
     /// 警告列表
     /// </summary>
-    public List<string> Warnings { get; set; } = new();
+    public List<string> Warnings { get; set; } = [];
 
     /// <summary>
     /// 返回验证结果的字符串表示
@@ -27,11 +29,11 @@ public class ValidationResult
     public override string ToString()
     {
         var result = $"验证结果: {(IsValid ? "通过" : "失败")}";
-        if (Errors.Any())
+        if (Errors.Count != 0)
         {
             result += $"\n错误: {string.Join(", ", Errors)}";
         }
-        if (Warnings.Any())
+        if (Warnings.Count != 0)
         {
             result += $"\n警告: {string.Join(", ", Warnings)}";
         }

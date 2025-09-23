@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using ContentPatcherMaker.Core.Extensions;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services.ErrorHandling;
 using ContentPatcherMaker.Core.Services.Logging;
@@ -18,7 +17,6 @@ public class ContentPatcherService
     private readonly LoggingService _loggingService;
     private readonly JsonGeneratorService _jsonGeneratorService;
     private readonly StardewValleyCompatibilityService _compatibilityService;
-    private readonly ExtensionApiService _extensionApiService;
 
     /// <summary>
     /// 初始化ContentPatcher服务
@@ -30,7 +28,6 @@ public class ContentPatcherService
         _validator = new ContentPatcherValidator();
         _jsonGeneratorService = new JsonGeneratorService(_loggingService);
         _compatibilityService = new StardewValleyCompatibilityService(_loggingService);
-        _extensionApiService = new ExtensionApiService(_loggingService);
     }
 
     /// <summary>
@@ -274,15 +271,6 @@ public class ContentPatcherService
     }
 
     /// <summary>
-    /// 获取扩展API服务
-    /// </summary>
-    /// <returns>扩展API服务</returns>
-    public IExtensionApi GetExtensionApi()
-    {
-        return _extensionApiService;
-    }
-
-    /// <summary>
     /// 获取错误处理服务
     /// </summary>
     /// <returns>错误处理服务</returns>
@@ -311,7 +299,6 @@ public class ContentPatcherService
             ErrorCount = _errorHandlingService.GetErrors().Count,
             WarningCount = _errorHandlingService.GetWarnings().Count,
             LogCount = _loggingService.GetAllLogs().Count,
-            ExtensionStatistics = _extensionApiService.GetStatistics()
         };
     }
 
@@ -346,11 +333,6 @@ public class ServiceStatistics
     /// 日志数量
     /// </summary>
     public int LogCount { get; set; }
-        
-    /// <summary>
-    /// 扩展统计信息
-    /// </summary>
-    public ExtensionStatistics ExtensionStatistics { get; set; } = new();
 
     /// <summary>
     /// 返回统计信息的字符串表示
@@ -358,6 +340,6 @@ public class ServiceStatistics
     /// <returns>统计信息字符串</returns>
     public override string ToString()
     {
-        return $"服务统计: 错误 {ErrorCount}, 警告 {WarningCount}, 日志 {LogCount}, {ExtensionStatistics}";
+        return $"服务统计: 错误 {ErrorCount}, 警告 {WarningCount}, 日志 {LogCount}";
     }
 }

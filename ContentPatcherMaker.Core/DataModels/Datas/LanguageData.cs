@@ -1,6 +1,6 @@
 using StardewValley.GameData;
 
-namespace ContentPatcherMaker.Core.DataModels;
+namespace ContentPatcherMaker.Core.DataModels.Datas;
 
 /// <summary>
 /// 语言数据集合
