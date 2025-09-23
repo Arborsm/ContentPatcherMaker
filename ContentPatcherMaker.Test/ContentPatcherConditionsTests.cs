@@ -1,8 +1,8 @@
-using Xunit;
-using Moq;
 using ContentPatcherMaker.Core.Extensions;
 using ContentPatcherMaker.Core.Services;
 using ContentPatcherMaker.Core.Validation;
+using Moq;
+using Xunit;
 
 namespace ContentPatcherMaker.Test;
 

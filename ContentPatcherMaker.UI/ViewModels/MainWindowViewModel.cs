@@ -1,6 +1,6 @@
-﻿namespace ContentPatcherMaker.ViewModels;
+﻿namespace ContentPatcherMaker.UI.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public class MainWindowViewModel : ViewModelBase
 {
 #pragma warning disable CA1822 // Mark members as static
     public string Greeting => "Welcome to Avalonia!";

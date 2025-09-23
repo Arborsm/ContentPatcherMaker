@@ -43,85 +43,85 @@ public enum CharacterType
 /// 角色数据模型
 /// 基于Content/Characters/schedules/*.json文件
 /// </summary>
-public record CharacterData : IDataModel
+public record CharacterData
 {
     /// <summary>
     /// 角色ID
     /// </summary>
     [JsonProperty("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
 
     /// <summary>
     /// 角色名称
     /// </summary>
     [JsonProperty("name")]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// 角色描述
     /// </summary>
     [JsonProperty("description")]
-    public string? Description { get; init; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// 角色类型
     /// </summary>
     [JsonProperty("type")]
-    public CharacterType Type { get; init; }
+    public CharacterType Type { get; set; }
 
     /// <summary>
     /// 是否可结婚
     /// </summary>
     [JsonProperty("isMarriageable")]
-    public bool IsMarriageable { get; init; }
+    public bool IsMarriageable { get; set; }
 
     /// <summary>
     /// 生日（月-日格式，如"spring-15"）
     /// </summary>
     [JsonProperty("birthday")]
-    public string? Birthday { get; init; }
+    public string? Birthday { get; set; }
 
     /// <summary>
     /// 最爱物品列表
     /// </summary>
     [JsonProperty("lovedItems")]
-    public List<string> LovedItems { get; init; } = new();
+    public List<string> LovedItems { get; set; } = new();
 
     /// <summary>
     /// 喜欢物品列表
     /// </summary>
     [JsonProperty("likedItems")]
-    public List<string> LikedItems { get; init; } = new();
+    public List<string> LikedItems { get; set; } = new();
 
     /// <summary>
     /// 中立物品列表
     /// </summary>
     [JsonProperty("neutralItems")]
-    public List<string> NeutralItems { get; init; } = new();
+    public List<string> NeutralItems { get; set; } = new();
 
     /// <summary>
     /// 不喜欢物品列表
     /// </summary>
     [JsonProperty("dislikedItems")]
-    public List<string> DislikedItems { get; init; } = new();
+    public List<string> DislikedItems { get; set; } = new();
 
     /// <summary>
     /// 讨厌物品列表
     /// </summary>
     [JsonProperty("hatedItems")]
-    public List<string> HatedItems { get; init; } = new();
+    public List<string> HatedItems { get; set; } = new();
 
     /// <summary>
     /// 日程数据
     /// </summary>
     [JsonProperty("schedules")]
-    public Dictionary<string, string> Schedules { get; init; } = new();
+    public Dictionary<string, string> Schedules { get; set; } = new();
 
     /// <summary>
     /// 对话数据
     /// </summary>
     [JsonProperty("dialogue")]
-    public Dictionary<string, string> Dialogue { get; init; } = new();
+    public Dictionary<string, string> Dialogue { get; set; } = new();
 
     /// <summary>
     /// 验证角色数据
@@ -151,7 +151,7 @@ public record CharacterData : IDataModel
 /// <summary>
 /// 角色数据集合
 /// </summary>
-public class CharacterDataCollection : IDataModelCollection<CharacterData>
+public class CharacterDataCollection : DataModelCollection<CharacterData>
 {
     private readonly Dictionary<string, CharacterData> _characters = new();
 
@@ -173,121 +173,90 @@ public class CharacterDataCollection : IDataModelCollection<CharacterData>
     /// <summary>
     /// 获取所有角色
     /// </summary>
-    public IEnumerable<CharacterData> GetAll() => _characters.Values;
+    public override IEnumerable<CharacterData> GetAll() => _characters.Values;
 
     /// <summary>
     /// 根据ID获取角色
     /// </summary>
     /// <param name="id">角色ID</param>
     /// <returns>角色数据，如果不存在则返回null</returns>
-    public CharacterData? GetById(string id)
-    {
-        return _characters.TryGetValue(id, out var character) ? character : null;
-    }
+    public override CharacterData? GetById(string id) => _characters.GetValueOrDefault(id);
 
     /// <summary>
     /// 检查角色是否存在
     /// </summary>
     /// <param name="id">角色ID</param>
     /// <returns>是否存在</returns>
-    public bool Exists(string id) => _characters.ContainsKey(id);
+    public override bool Exists(string id) => _characters.ContainsKey(id);
 
     /// <summary>
     /// 搜索角色
     /// </summary>
     /// <param name="predicate">搜索条件</param>
     /// <returns>匹配的角色列表</returns>
-    public IEnumerable<CharacterData> Search(Func<CharacterData, bool> predicate)
-    {
-        return _characters.Values.Where(predicate);
-    }
+    public override IEnumerable<CharacterData> Search(Func<CharacterData, bool> predicate) => _characters.Values.Where(predicate);
 
     /// <summary>
     /// 获取可结婚的角色
     /// </summary>
     /// <returns>可结婚的角色列表</returns>
-    public IEnumerable<CharacterData> GetMarriageableCharacters()
-    {
-        return _characters.Values.Where(c => c.IsMarriageable);
-    }
+    public IEnumerable<CharacterData> GetMarriageableCharacters() => _characters.Values.Where(c => c.IsMarriageable);
 
     /// <summary>
     /// 获取村民角色
     /// </summary>
     /// <returns>村民角色列表</returns>
-    public IEnumerable<CharacterData> GetVillagerCharacters()
-    {
-        return _characters.Values.Where(c => c.Type == CharacterType.Villager);
-    }
+    public IEnumerable<CharacterData> GetVillagerCharacters() => _characters.Values.Where(c => c.Type == CharacterType.Villager);
 
     /// <summary>
     /// 获取特殊角色
     /// </summary>
     /// <returns>特殊角色列表</returns>
-    public IEnumerable<CharacterData> GetSpecialCharacters()
-    {
-        return _characters.Values.Where(c => c.Type == CharacterType.Special);
-    }
+    public IEnumerable<CharacterData> GetSpecialCharacters() => _characters.Values.Where(c => c.Type == CharacterType.Special);
 
     /// <summary>
     /// 获取动物角色
     /// </summary>
     /// <returns>动物角色列表</returns>
-    public IEnumerable<CharacterData> GetAnimalCharacters()
-    {
-        return _characters.Values.Where(c => c.Type == CharacterType.Animal);
-    }
+    public IEnumerable<CharacterData> GetAnimalCharacters() => _characters.Values.Where(c => c.Type == CharacterType.Animal);
 
     /// <summary>
     /// 获取怪物角色
     /// </summary>
     /// <returns>怪物角色列表</returns>
-    public IEnumerable<CharacterData> GetMonsterCharacters()
-    {
-        return _characters.Values.Where(c => c.Type == CharacterType.Monster);
-    }
+    public IEnumerable<CharacterData> GetMonsterCharacters() => _characters.Values.Where(c => c.Type == CharacterType.Monster);
 
     /// <summary>
     /// 根据类型获取角色
     /// </summary>
     /// <param name="type">角色类型</param>
     /// <returns>指定类型的角色列表</returns>
-    public IEnumerable<CharacterData> GetCharactersByType(CharacterType type)
-    {
-        return _characters.Values.Where(c => c.Type == type);
-    }
+    public IEnumerable<CharacterData> GetCharactersByType(CharacterType type) => _characters.Values.Where(c => c.Type == type);
 
     /// <summary>
     /// 根据生日获取角色
     /// </summary>
     /// <param name="birthday">生日</param>
     /// <returns>指定生日的角色列表</returns>
-    public IEnumerable<CharacterData> GetCharactersByBirthday(string birthday)
-    {
-        return _characters.Values.Where(c => c.Birthday == birthday);
-    }
+    public IEnumerable<CharacterData> GetCharactersByBirthday(string birthday) => _characters.Values.Where(c => c.Birthday == birthday);
 
     /// <summary>
     /// 搜索喜欢特定物品的角色
     /// </summary>
     /// <param name="itemName">物品名称</param>
     /// <returns>喜欢该物品的角色列表</returns>
-    public IEnumerable<CharacterData> GetCharactersWhoLikeItem(string itemName)
-    {
-        return _characters.Values.Where(c => 
+    public IEnumerable<CharacterData> GetCharactersWhoLikeItem(string itemName) =>
+        _characters.Values.Where(c => 
             c.LovedItems.Contains(itemName) || 
             c.LikedItems.Contains(itemName));
-    }
 
     /// <summary>
     /// 搜索讨厌特定物品的角色
     /// </summary>
     /// <param name="itemName">物品名称</param>
     /// <returns>讨厌该物品的角色列表</returns>
-    public IEnumerable<CharacterData> GetCharactersWhoHateItem(string itemName)
-    {
-        return _characters.Values.Where(c => 
+    public IEnumerable<CharacterData> GetCharactersWhoHateItem(string itemName) =>
+        _characters.Values.Where(c => 
             c.DislikedItems.Contains(itemName) || 
             c.HatedItems.Contains(itemName));
-    }
 }

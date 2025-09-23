@@ -7,6 +7,9 @@
 ### ✅ 核心功能
 - **完整的ContentPatcher数据模型** - 支持所有ContentPatcher操作类型（Load、EditData、EditImage、EditMap、Include）
 - **动态数据模型系统** - 从JSON文件动态加载游戏数据，支持代码补全和前端选择
+- **游戏路径自动检测** - 基于StardewXnbHack的智能游戏路径检测，支持Windows、Linux、macOS
+- **DataModelManager工厂** - 提供便捷的DataModelManager创建和配置功能
+- **XNB解包功能** - 基于StardewXnbHack的XNB文件解包，支持纹理、地图、数据等多种资源类型
 - **完善的参数验证机制** - 严格验证所有输入参数，确保生成的JSON符合ContentPatcher规范
 - **错误处理和日志记录** - 提供详细的错误信息和日志记录，便于调试和问题排查
 - **JSON生成和解析** - 自动生成符合ContentPatcher规范的JSON格式输出文件
@@ -45,6 +48,18 @@ Core/
 │   ├── ContentPatcherService.cs      # 主服务类
 │   ├── JsonGeneratorService.cs       # JSON生成服务
 │   ├── StardewValleyCompatibilityService.cs  # 兼容性验证服务
+│   ├── GamePathDetectionService.cs   # 游戏路径检测服务
+│   ├── DataModelManagerFactory.cs    # DataModelManager工厂
+│   ├── XnbUnpackingService.cs        # XNB解包服务
+│   ├── AssetWriters/          # 资产写入器
+│   │   ├── IAssetWriter.cs    # 资产写入器接口
+│   │   ├── BaseAssetWriter.cs # 资产写入器基类
+│   │   ├── DataAssetWriter.cs # 数据资产写入器
+│   │   ├── TextureAssetWriter.cs # 纹理资产写入器
+│   │   ├── MapAssetWriter.cs  # 地图资产写入器
+│   │   ├── SpriteFontAssetWriter.cs # 精灵字体资产写入器
+│   │   ├── XmlAssetWriter.cs  # XML资产写入器
+│   │   └── IgnoreDefaultOptionalPropertiesResolver.cs # JSON序列化解析器
 │   ├── ErrorHandling/         # 错误处理
 │   │   └── ErrorHandlingService.cs
 │   └── Logging/               # 日志服务
@@ -134,9 +149,176 @@ var dataManager = new DataModelManager(jsonLoader, loggingService);
 await dataManager.LoadAllDataAsync();
 
 // 获取成就数据
-var achievements = dataManager.GetModels<AchievementData>("Achievements");
-var allAchievements = achievements?.Models;
-var specificAchievement = achievements?.GetById("0");
+var achievements = dataManager.Achievements;
+var allAchievements = achievements.GetAll();
+var specificAchievement = achievements.GetById("0");
+```
+
+### 游戏路径自动检测
+
+基于StardewXnbHack的智能游戏路径检测，支持多平台：
+
+#### JSON模式（解包后文件）
+```csharp
+// 创建DataModelManager工厂
+var factory = new DataModelManagerFactory(loggingService);
+
+// 自动检测游戏路径并创建DataModelManager（JSON模式）
+var result = await factory.CreateWithAutoDetectionAsync();
+
+if (result.IsSuccess && result.DataModelManager != null)
+{
+    Console.WriteLine($"游戏路径: {result.GamePath}");
+    Console.WriteLine($"内容路径: {result.ContentPath}");
+    Console.WriteLine($"平台: {result.Platform}");
+    
+    // 使用DataModelManager查询游戏数据
+    var achievements = result.DataModelManager.Achievements.GetAll();
+    var characters = result.DataModelManager.Characters.GetAll();
+}
+```
+
+#### XNB模式（直接从游戏目录）
+```csharp
+// 自动检测游戏路径并创建DataModelManager（XNB模式）
+var result = await factory.CreateWithAutoDetectionXnbAsync();
+
+if (result.IsSuccess && result.DataModelManager != null)
+{
+    Console.WriteLine($"游戏路径: {result.GamePath}");
+    Console.WriteLine($"内容路径: {result.ContentPath}");
+    Console.WriteLine($"平台: {result.Platform}");
+    
+    // 直接从XNB文件加载数据
+    var achievements = result.DataModelManager.Achievements.GetAll();
+    var characters = result.DataModelManager.Characters.GetAll();
+}
+```
+
+### 指定游戏路径
+
+#### JSON模式
+```csharp
+// 指定游戏路径
+string gamePath = @"C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley";
+
+// 检测游戏路径
+var pathDetectionService = new GamePathDetectionService(loggingService);
+var detectionResult = pathDetectionService.DetectGamePaths(gamePath);
+
+if (detectionResult.IsSuccess)
+{
+    // 创建DataModelManager（JSON模式）
+    var dataModelManager = factory.CreateFromDetectionResult(detectionResult);
+    
+    // 加载所有数据
+    await dataModelManager.LoadAllDataAsync();
+    
+    // 检查加载状态
+    var status = dataModelManager.GetLoadingStatus();
+    Console.WriteLine($"加载状态: {status}");
+}
+```
+
+#### XNB模式
+```csharp
+// 指定游戏路径
+string gamePath = @"C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley";
+
+// 检测游戏路径
+var pathDetectionService = new GamePathDetectionService(loggingService);
+var detectionResult = pathDetectionService.DetectGamePaths(gamePath);
+
+if (detectionResult.IsSuccess)
+{
+    // 创建DataModelManager（XNB模式）
+    var dataModelManager = factory.CreateFromDetectionResultXnb(detectionResult);
+    
+    // 加载所有数据
+    await dataModelManager.LoadAllDataAsync();
+    
+    // 检查加载状态
+    var status = dataModelManager.GetLoadingStatus();
+    Console.WriteLine($"加载状态: {status}");
+}
+```
+
+### 模式选择
+
+#### JSON模式 vs XNB模式
+
+**JSON模式**：
+- 从解包后的JSON文件加载数据
+- 需要先使用XNB解包功能解包游戏文件
+- 适合需要编辑游戏数据的场景
+- 加载速度较快
+
+**XNB模式**：
+- 直接从游戏目录的XNB文件加载数据
+- 无需预先解包，直接访问游戏资源
+- 适合只读访问游戏数据的场景
+- 需要MonoGame/XNA运行时支持
+
+#### 选择性加载数据
+
+```csharp
+// 只加载成就和角色数据
+var dataModelManager = await factory.CreateWithSelectiveLoadingAsync(
+    gamePath, 
+    contentPath, 
+    DataType.Achievements, 
+    DataType.Characters);
+
+// 查询特定数据
+var marriageableCharacters = dataModelManager.Characters.Search(c => c.IsMarriageable);
+var hiddenAchievements = dataModelManager.Achievements.GetHiddenAchievements();
+```
+
+### XNB解包功能
+
+基于StardewXnbHack的XNB文件解包，支持多种资源类型：
+
+```csharp
+// 创建XNB解包服务
+var unpackingService = new XnbUnpackingService(loggingService);
+
+// 解包单个XNB文件
+using var game = new Game();
+var contentManager = new ContentManager(game.Services, "Content");
+var result = await unpackingService.UnpackXnbFileAsync("path/to/file.xnb", "output/path", contentManager);
+
+if (result.IsSuccess)
+{
+    Console.WriteLine($"解包成功: {result.OutputPath}");
+    Console.WriteLine($"资源类型: {result.AssetType}");
+}
+```
+
+### 批量解包XNB文件
+
+```csharp
+// 解包Content目录下的所有XNB文件
+var result = await unpackingService.UnpackAllXnbFilesAsync(contentDirectory, outputDirectory, contentManager);
+
+if (result.IsSuccess)
+{
+    Console.WriteLine($"解包完成: 成功 {result.SuccessCount} 个，失败 {result.FailureCount} 个");
+    Console.WriteLine($"输出目录: {result.OutputPath}");
+}
+```
+
+### 解包特定类型的文件
+
+```csharp
+// 解包特定模式的文件
+var xnbFiles = Directory.GetFiles(contentDirectory, "Characters/*.xnb", SearchOption.AllDirectories);
+var results = await unpackingService.UnpackXnbFilesAsync(xnbFiles, outputDirectory, contentManager);
+
+foreach (var result in results)
+{
+    var status = result.IsSuccess ? "✅" : "❌";
+    Console.WriteLine($"{status} {Path.GetFileName(result.OutputPath)} - {result.AssetType}");
+}
 ```
 
 ### 支持的数据类型

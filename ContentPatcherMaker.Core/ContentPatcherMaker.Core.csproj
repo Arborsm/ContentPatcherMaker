@@ -5,11 +5,29 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <OutputType>Exe</OutputType>
+
+    <!--don't append Git commit SHA to version, since it's shown in the app-->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+
+    <!--mod build package-->
+    <CopyModReferencesToBuildOutput>True</CopyModReferencesToBuildOutput>
+    <EnableGameDebugging>False</EnableGameDebugging>
+    <EnableModDeploy>False</EnableModDeploy>
+    <EnableModZip>False</EnableModZip>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
+    <PackageReference Include="Platonymous.TMXTile" Version="1.5.9" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BmFont" HintPath="$(GamePath)\BmFont.dll" />
+    <Reference Include="SMAPI.Toolkit" HintPath="$(GamePath)\smapi-public\SMAPI.Toolkit.dll" />
+    <Reference Include="SMAPI.Toolkit.CoreInterfaces" HintPath="$(GamePath)\smapi-public\SMAPI.Toolkit.CoreInterfaces.dll" />
   </ItemGroup>
 
 </Project>

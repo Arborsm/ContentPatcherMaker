@@ -1,6 +1,5 @@
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 using ContentPatcherMaker.Core.Services.Logging;
+using Newtonsoft.Json;
 
 namespace ContentPatcherMaker.Core.DataModels;
 
@@ -11,6 +10,11 @@ public class JsonDataLoader
 {
     private readonly LoggingService _loggingService;
     private readonly string _contentPath;
+
+    /// <summary>
+    /// Content文件夹路径
+    /// </summary>
+    public string ContentPath => _contentPath;
 
     /// <summary>
     /// 初始化JSON数据加载器
@@ -129,11 +133,11 @@ public class JsonDataLoader
             if (!Directory.Exists(fullPath))
             {
                 _loggingService.LogWarning($"目录不存在: {fullPath}", "JsonDataLoader");
-                return Enumerable.Empty<string>();
+                return [];
             }
 
             var jsonFiles = Directory.GetFiles(fullPath, "*.json", SearchOption.AllDirectories)
-                .Select(fullPath => Path.GetRelativePath(_contentPath, fullPath))
+                .Select(path => Path.GetRelativePath(_contentPath, path))
                 .ToList();
 
             _loggingService.LogDebug($"找到 {jsonFiles.Count} 个JSON文件在目录: {relativeDirectory}", "JsonDataLoader");
@@ -142,7 +146,7 @@ public class JsonDataLoader
         catch (Exception ex)
         {
             _loggingService.LogError($"获取JSON文件路径失败: {relativeDirectory}, 错误: {ex.Message}", ex, "JsonDataLoader");
-            return Enumerable.Empty<string>();
+            return [];
         }
     }
 }

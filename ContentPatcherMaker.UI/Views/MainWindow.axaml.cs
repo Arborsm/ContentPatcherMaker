@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace ContentPatcherMaker.Views;
+namespace ContentPatcherMaker.UI.Views;
 
 public partial class MainWindow : Window
 {

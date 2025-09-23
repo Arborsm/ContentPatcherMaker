@@ -1,7 +1,7 @@
-﻿using Avalonia;
-using System;
+﻿using System;
+using Avalonia;
 
-namespace ContentPatcherMaker;
+namespace ContentPatcherMaker.UI;
 
 sealed class Program
 {

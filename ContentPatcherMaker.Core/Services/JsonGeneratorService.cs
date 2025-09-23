@@ -1,7 +1,9 @@
-using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using ContentPatcherMaker.Core.DataModels;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services.Logging;
-using ContentPatcherMaker.Core.DataModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace ContentPatcherMaker.Core.Services;
 
@@ -27,7 +29,7 @@ public class JsonGeneratorService
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Include,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Converters = { new Newtonsoft.Json.Converters.StringEnumConverter() }
+            Converters = { new StringEnumConverter() }
         };
     }
 
@@ -351,7 +353,7 @@ public class JsonGeneratorService
 
         // 检查版本格式
         var versionPattern = @"^\d+\.\d+\.\d+$";
-        if (!System.Text.RegularExpressions.Regex.IsMatch(format, versionPattern))
+        if (!Regex.IsMatch(format, versionPattern))
             return false;
 
         // 检查版本是否过旧

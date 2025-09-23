@@ -1,6 +1,7 @@
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
+
 // ReSharper disable All
 
 namespace ContentPatcherMaker.Test;
@@ -170,7 +171,7 @@ public class TestRunner
         public TestStatus Status { get; set; }
         public string Message { get; set; } = string.Empty;
         public Exception? Exception { get; set; }
-        public DateTime StartTime { get; init; }
+        public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public TimeSpan Duration { get; set; }
     }

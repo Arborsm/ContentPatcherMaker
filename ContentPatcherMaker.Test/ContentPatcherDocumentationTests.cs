@@ -1,9 +1,9 @@
-using Xunit;
-using Moq;
+using ContentPatcherMaker.Core.DataModels;
+using ContentPatcherMaker.Core.Extensions;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services;
-using ContentPatcherMaker.Core.Extensions;
-using ContentPatcherMaker.Core.DataModels;
+using Moq;
+using Xunit;
 using Xunit.Abstractions;
 using ValidationResult = ContentPatcherMaker.Core.Validation.ValidationResult;
 

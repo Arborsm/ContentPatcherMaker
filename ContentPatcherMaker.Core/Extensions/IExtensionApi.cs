@@ -1,6 +1,6 @@
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Validation;
-using ContentPatcherMaker.Core.DataModels;
+// ReSharper disable All
 
 namespace ContentPatcherMaker.Core.Extensions;
 
@@ -56,7 +56,7 @@ public interface IExtensionApi
     /// <param name="patchType">补丁类型</param>
     /// <param name="patchData">补丁数据</param>
     /// <returns>验证结果</returns>
-    ContentPatcherMaker.Core.Validation.ValidationResult ValidateCustomPatch(string patchType, Dictionary<string, object> patchData);
+    ValidationResult ValidateCustomPatch(string patchType, Dictionary<string, object> patchData);
 
     /// <summary>
     /// 处理自定义补丁
@@ -72,40 +72,13 @@ public interface IExtensionApi
     /// <param name="ruleName">规则名称</param>
     /// <param name="data">要验证的数据</param>
     /// <returns>验证结果</returns>
-    ContentPatcherMaker.Core.Validation.ValidationResult ApplyValidationRule(string ruleName, object data);
+    ValidationResult ApplyValidationRule(string ruleName, object data);
 
     /// <summary>
     /// 获取扩展统计信息
     /// </summary>
     /// <returns>统计信息</returns>
     ExtensionStatistics GetStatistics();
-
-    /// <summary>
-    /// 注册自定义数据模型加载器
-    /// </summary>
-    /// <typeparam name="T">数据模型类型</typeparam>
-    /// <param name="modelName">模型名称</param>
-    /// <param name="loader">数据加载器</param>
-    void RegisterDataModelLoader<T>(string modelName, IDataModelLoader<T> loader) where T : IDataModel;
-
-    /// <summary>
-    /// 获取数据模型
-    /// </summary>
-    /// <typeparam name="T">数据模型类型</typeparam>
-    /// <param name="modelName">模型名称</param>
-    /// <returns>数据模型集合</returns>
-    IDataModelCollection<T>? GetDataModel<T>(string modelName) where T : IDataModel;
-
-    /// <summary>
-    /// 获取所有已注册的数据模型名称
-    /// </summary>
-    /// <returns>数据模型名称列表</returns>
-    IEnumerable<string> GetRegisteredDataModelNames();
-
-    /// <summary>
-    /// 重新加载所有数据模型
-    /// </summary>
-    Task ReloadAllDataModelsAsync();
 }
 
 /// <summary>
@@ -118,7 +91,7 @@ public interface ICustomPatchValidator
     /// </summary>
     /// <param name="patchData">补丁数据</param>
     /// <returns>验证结果</returns>
-    ContentPatcherMaker.Core.Validation.ValidationResult Validate(Dictionary<string, object> patchData);
+    ValidationResult Validate(Dictionary<string, object> patchData);
 }
 
 /// <summary>
@@ -174,7 +147,7 @@ public interface IValidationRule
     /// </summary>
     /// <param name="data">要验证的数据</param>
     /// <returns>验证结果</returns>
-    ContentPatcherMaker.Core.Validation.ValidationResult Validate(object data);
+    ValidationResult Validate(object data);
 }
 
 /// <summary>
@@ -333,30 +306,6 @@ public class ProcessingResult
     /// 警告消息
     /// </summary>
     public List<string> Warnings { get; set; } = [];
-}
-
-/// <summary>
-/// 数据模型加载器接口
-/// </summary>
-/// <typeparam name="T">数据模型类型</typeparam>
-public interface IDataModelLoader<T> where T : IDataModel
-{
-    /// <summary>
-    /// 模型名称
-    /// </summary>
-    string ModelName { get; }
-
-    /// <summary>
-    /// 加载数据模型
-    /// </summary>
-    /// <returns>数据模型集合</returns>
-    Task<IDataModelCollection<T>> LoadAsync();
-
-    /// <summary>
-    /// 重新加载数据模型
-    /// </summary>
-    /// <returns>数据模型集合</returns>
-    Task<IDataModelCollection<T>> ReloadAsync();
 }
 
 /// <summary>

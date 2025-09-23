@@ -2,12 +2,12 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using ContentPatcherMaker.ViewModels;
-using ContentPatcherMaker.Views;
+using ContentPatcherMaker.UI.ViewModels;
+using ContentPatcherMaker.UI.Views;
 
-namespace ContentPatcherMaker;
+namespace ContentPatcherMaker.UI;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {

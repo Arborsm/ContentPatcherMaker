@@ -43,103 +43,103 @@ public enum FestivalType
 /// 节日数据模型
 /// 基于Content/Data/Festivals/*.json文件
 /// </summary>
-public record FestivalData : IDataModel
+public record FestivalData
 {
     /// <summary>
     /// 节日ID
     /// </summary>
     [JsonProperty("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
 
     /// <summary>
     /// 节日名称
     /// </summary>
     [JsonProperty("name")]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// 节日描述
     /// </summary>
     [JsonProperty("description")]
-    public string? Description { get; init; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// 节日类型
     /// </summary>
     [JsonProperty("type")]
-    public FestivalType Type { get; init; }
+    public FestivalType Type { get; set; }
 
     /// <summary>
     /// 节日日期（月-日格式，如"spring-13"）
     /// </summary>
     [JsonProperty("date")]
-    public string? Date { get; init; }
+    public string? Date { get; set; }
 
     /// <summary>
     /// 节日时间
     /// </summary>
     [JsonProperty("time")]
-    public string? Time { get; init; }
+    public string? Time { get; set; }
 
     /// <summary>
     /// 节日位置
     /// </summary>
     [JsonProperty("location")]
-    public string? Location { get; init; }
+    public string? Location { get; set; }
 
     /// <summary>
     /// 触发条件
     /// </summary>
     [JsonProperty("conditions")]
-    public string? Conditions { get; init; }
+    public string? Conditions { get; set; }
 
     /// <summary>
     /// 节日设置脚本
     /// </summary>
     [JsonProperty("setupScript")]
-    public string? SetupScript { get; init; }
+    public string? SetupScript { get; set; }
 
     /// <summary>
     /// 节日对话
     /// </summary>
     [JsonProperty("dialogue")]
-    public Dictionary<string, string> Dialogue { get; init; } = new();
+    public Dictionary<string, string> Dialogue { get; set; } = new();
 
     /// <summary>
     /// 相关角色
     /// </summary>
     [JsonProperty("characters")]
-    public List<string> Characters { get; init; } = new();
+    public List<string> Characters { get; set; } = [];
 
     /// <summary>
     /// 节日活动
     /// </summary>
     [JsonProperty("activities")]
-    public List<string> Activities { get; init; } = new();
+    public List<string> Activities { get; set; } = [];
 
     /// <summary>
     /// 奖励物品
     /// </summary>
     [JsonProperty("rewards")]
-    public List<string> Rewards { get; init; } = new();
+    public List<string> Rewards { get; set; } = [];
 
     /// <summary>
     /// 是否每年重复
     /// </summary>
     [JsonProperty("isYearly")]
-    public bool IsYearly { get; init; } = true;
+    public bool IsYearly { get; set; } = true;
 
     /// <summary>
     /// 是否可跳过
     /// </summary>
     [JsonProperty("isSkippable")]
-    public bool IsSkippable { get; init; } = false;
+    public bool IsSkippable { get; set; }
 
     /// <summary>
     /// 优先级
     /// </summary>
     [JsonProperty("priority")]
-    public int Priority { get; init; }
+    public int Priority { get; set; }
 
     /// <summary>
     /// 验证节日数据
@@ -175,7 +175,7 @@ public record FestivalData : IDataModel
 /// <summary>
 /// 节日数据集合
 /// </summary>
-public class FestivalDataCollection : IDataModelCollection<FestivalData>
+public class FestivalDataCollection : DataModelCollection<FestivalData>
 {
     private readonly Dictionary<string, FestivalData> _festivals = new();
 
@@ -197,182 +197,128 @@ public class FestivalDataCollection : IDataModelCollection<FestivalData>
     /// <summary>
     /// 获取所有节日
     /// </summary>
-    public IEnumerable<FestivalData> GetAll() => _festivals.Values;
+    public override IEnumerable<FestivalData> GetAll() => _festivals.Values;
 
     /// <summary>
     /// 根据ID获取节日
     /// </summary>
     /// <param name="id">节日ID</param>
     /// <returns>节日数据，如果不存在则返回null</returns>
-    public FestivalData? GetById(string id)
-    {
-        return _festivals.TryGetValue(id, out var festival) ? festival : null;
-    }
+    public override FestivalData? GetById(string id) => _festivals.GetValueOrDefault(id);
 
     /// <summary>
     /// 检查节日是否存在
     /// </summary>
     /// <param name="id">节日ID</param>
     /// <returns>是否存在</returns>
-    public bool Exists(string id) => _festivals.ContainsKey(id);
+    public override bool Exists(string id) => _festivals.ContainsKey(id);
 
     /// <summary>
     /// 搜索节日
     /// </summary>
     /// <param name="predicate">搜索条件</param>
     /// <returns>匹配的节日列表</returns>
-    public IEnumerable<FestivalData> Search(Func<FestivalData, bool> predicate)
-    {
-        return _festivals.Values.Where(predicate);
-    }
+    public override IEnumerable<FestivalData> Search(Func<FestivalData, bool> predicate) => _festivals.Values.Where(predicate);
 
     /// <summary>
     /// 根据类型获取节日
     /// </summary>
     /// <param name="type">节日类型</param>
     /// <returns>指定类型的节日列表</returns>
-    public IEnumerable<FestivalData> GetFestivalsByType(FestivalType type)
-    {
-        return _festivals.Values.Where(f => f.Type == type);
-    }
+    public IEnumerable<FestivalData> GetFestivalsByType(FestivalType type) => _festivals.Values.Where(f => f.Type == type);
 
     /// <summary>
     /// 获取春季节日
     /// </summary>
     /// <returns>春季节日列表</returns>
-    public IEnumerable<FestivalData> GetSpringFestivals()
-    {
-        return _festivals.Values.Where(f => f.Type == FestivalType.Spring);
-    }
+    public IEnumerable<FestivalData> GetSpringFestivals() => _festivals.Values.Where(f => f.Type == FestivalType.Spring);
 
     /// <summary>
     /// 获取夏季节日
     /// </summary>
     /// <returns>夏季节日列表</returns>
-    public IEnumerable<FestivalData> GetSummerFestivals()
-    {
-        return _festivals.Values.Where(f => f.Type == FestivalType.Summer);
-    }
+    public IEnumerable<FestivalData> GetSummerFestivals() => _festivals.Values.Where(f => f.Type == FestivalType.Summer);
 
     /// <summary>
     /// 获取秋季节日
     /// </summary>
     /// <returns>秋季节日列表</returns>
-    public IEnumerable<FestivalData> GetFallFestivals()
-    {
-        return _festivals.Values.Where(f => f.Type == FestivalType.Fall);
-    }
+    public IEnumerable<FestivalData> GetFallFestivals() => _festivals.Values.Where(f => f.Type == FestivalType.Fall);
 
     /// <summary>
     /// 获取冬季节日
     /// </summary>
     /// <returns>冬季节日列表</returns>
-    public IEnumerable<FestivalData> GetWinterFestivals()
-    {
-        return _festivals.Values.Where(f => f.Type == FestivalType.Winter);
-    }
+    public IEnumerable<FestivalData> GetWinterFestivals() => _festivals.Values.Where(f => f.Type == FestivalType.Winter);
 
     /// <summary>
     /// 获取特殊节日
     /// </summary>
     /// <returns>特殊节日列表</returns>
-    public IEnumerable<FestivalData> GetSpecialFestivals()
-    {
-        return _festivals.Values.Where(f => f.Type == FestivalType.Special);
-    }
+    public IEnumerable<FestivalData> GetSpecialFestivals() => _festivals.Values.Where(f => f.Type == FestivalType.Special);
 
     /// <summary>
     /// 根据日期获取节日
     /// </summary>
     /// <param name="date">日期</param>
     /// <returns>指定日期的节日列表</returns>
-    public IEnumerable<FestivalData> GetFestivalsByDate(string date)
-    {
-        return _festivals.Values.Where(f => f.Date == date);
-    }
+    public IEnumerable<FestivalData> GetFestivalsByDate(string date) => _festivals.Values.Where(f => f.Date == date);
 
     /// <summary>
     /// 根据位置获取节日
     /// </summary>
     /// <param name="location">位置</param>
     /// <returns>在指定位置的节日列表</returns>
-    public IEnumerable<FestivalData> GetFestivalsByLocation(string location)
-    {
-        return _festivals.Values.Where(f => f.Location == location);
-    }
+    public IEnumerable<FestivalData> GetFestivalsByLocation(string location) => _festivals.Values.Where(f => f.Location == location);
 
     /// <summary>
     /// 获取可跳过的节日
     /// </summary>
     /// <returns>可跳过的节日列表</returns>
-    public IEnumerable<FestivalData> GetSkippableFestivals()
-    {
-        return _festivals.Values.Where(f => f.IsSkippable);
-    }
+    public IEnumerable<FestivalData> GetSkippableFestivals() => _festivals.Values.Where(f => f.IsSkippable);
 
     /// <summary>
     /// 获取不可跳过的节日
     /// </summary>
     /// <returns>不可跳过的节日列表</returns>
-    public IEnumerable<FestivalData> GetNonSkippableFestivals()
-    {
-        return _festivals.Values.Where(f => !f.IsSkippable);
-    }
+    public IEnumerable<FestivalData> GetNonSkippableFestivals() => _festivals.Values.Where(f => !f.IsSkippable);
 
     /// <summary>
     /// 获取每年重复的节日
     /// </summary>
     /// <returns>每年重复的节日列表</returns>
-    public IEnumerable<FestivalData> GetYearlyFestivals()
-    {
-        return _festivals.Values.Where(f => f.IsYearly);
-    }
+    public IEnumerable<FestivalData> GetYearlyFestivals() => _festivals.Values.Where(f => f.IsYearly);
 
     /// <summary>
     /// 获取不每年重复的节日
     /// </summary>
     /// <returns>不每年重复的节日列表</returns>
-    public IEnumerable<FestivalData> GetNonYearlyFestivals()
-    {
-        return _festivals.Values.Where(f => !f.IsYearly);
-    }
+    public IEnumerable<FestivalData> GetNonYearlyFestivals() => _festivals.Values.Where(f => !f.IsYearly);
 
     /// <summary>
     /// 根据角色获取节日
     /// </summary>
     /// <param name="characterId">角色ID</param>
     /// <returns>涉及该角色的节日列表</returns>
-    public IEnumerable<FestivalData> GetFestivalsByCharacter(string characterId)
-    {
-        return _festivals.Values.Where(f => f.Characters.Contains(characterId));
-    }
+    public IEnumerable<FestivalData> GetFestivalsByCharacter(string characterId) => _festivals.Values.Where(f => f.Characters.Contains(characterId));
 
     /// <summary>
     /// 根据活动获取节日
     /// </summary>
     /// <param name="activity">活动名称</param>
     /// <returns>包含该活动的节日列表</returns>
-    public IEnumerable<FestivalData> GetFestivalsByActivity(string activity)
-    {
-        return _festivals.Values.Where(f => f.Activities.Contains(activity));
-    }
+    public IEnumerable<FestivalData> GetFestivalsByActivity(string activity) => _festivals.Values.Where(f => f.Activities.Contains(activity));
 
     /// <summary>
     /// 根据优先级获取节日
     /// </summary>
     /// <param name="priority">优先级</param>
     /// <returns>指定优先级的节日列表</returns>
-    public IEnumerable<FestivalData> GetFestivalsByPriority(int priority)
-    {
-        return _festivals.Values.Where(f => f.Priority == priority);
-    }
+    public IEnumerable<FestivalData> GetFestivalsByPriority(int priority) => _festivals.Values.Where(f => f.Priority == priority);
 
     /// <summary>
     /// 获取按日期排序的节日
     /// </summary>
     /// <returns>按日期排序的节日列表</returns>
-    public IEnumerable<FestivalData> GetFestivalsOrderedByDate()
-    {
-        return _festivals.Values.OrderBy(f => f.Date);
-    }
+    public IEnumerable<FestivalData> GetFestivalsOrderedByDate() => _festivals.Values.OrderBy(f => f.Date);
 }

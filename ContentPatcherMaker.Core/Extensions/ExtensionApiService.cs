@@ -1,7 +1,6 @@
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services.Logging;
 using ContentPatcherMaker.Core.Validation;
-using ContentPatcherMaker.Core.DataModels;
 
 namespace ContentPatcherMaker.Core.Extensions;
 
@@ -15,8 +14,6 @@ public class ExtensionApiService : IExtensionApi
     private readonly Dictionary<string, ITokenProvider> _tokenProviders = new();
     private readonly Dictionary<string, IValidationRule> _validationRules = new();
     private readonly Dictionary<string, IOutputFormatter> _outputFormatters = new();
-    private readonly Dictionary<string, IDataModelLoader<IDataModel>> _dataModelLoaders = new();
-    private readonly Dictionary<string, IDataModelCollection<IDataModel>> _dataModels = new();
     private readonly LoggingService _loggingService;
 
     /// <summary>
@@ -100,7 +97,7 @@ public class ExtensionApiService : IExtensionApi
     /// <summary>
     /// 验证自定义补丁
     /// </summary>
-    public ContentPatcherMaker.Core.Validation.ValidationResult ValidateCustomPatch(string patchType, Dictionary<string, object> patchData)
+    public ValidationResult ValidateCustomPatch(string patchType, Dictionary<string, object> patchData)
     {
         if (string.IsNullOrEmpty(patchType))
             throw new ArgumentException("补丁类型不能为空", nameof(patchType));
@@ -112,7 +109,7 @@ public class ExtensionApiService : IExtensionApi
         {
             var error = $"未找到补丁类型 '{patchType}' 的验证器";
             _loggingService.LogError(error, context: "ExtensionApi.ValidateCustomPatch");
-            return new ContentPatcherMaker.Core.Validation.ValidationResult
+            return new ValidationResult
             {
                 IsValid = false,
                 Errors = [error]
@@ -129,7 +126,7 @@ public class ExtensionApiService : IExtensionApi
         {
             var error = $"验证补丁类型 '{patchType}' 时发生异常: {ex.Message}";
             _loggingService.LogError(error, ex, "ExtensionApi.ValidateCustomPatch");
-            return new ContentPatcherMaker.Core.Validation.ValidationResult
+            return new ValidationResult
             {
                 IsValid = false,
                 Errors = [error]
@@ -212,7 +209,7 @@ public class ExtensionApiService : IExtensionApi
     /// <param name="ruleName">规则名称</param>
     /// <param name="data">要验证的数据</param>
     /// <returns>验证结果</returns>
-    public ContentPatcherMaker.Core.Validation.ValidationResult ApplyValidationRule(string ruleName, object data)
+    public ValidationResult ApplyValidationRule(string ruleName, object data)
     {
         if (string.IsNullOrEmpty(ruleName))
             throw new ArgumentException("规则名称不能为空", nameof(ruleName));
@@ -221,7 +218,7 @@ public class ExtensionApiService : IExtensionApi
         {
             var error = $"未找到验证规则 '{ruleName}'";
             _loggingService.LogError(error, context: "ExtensionApi.ApplyValidationRule");
-            return new ContentPatcherMaker.Core.Validation.ValidationResult
+            return new ValidationResult
             {
                 IsValid = false,
                 Errors = [error]
@@ -238,7 +235,7 @@ public class ExtensionApiService : IExtensionApi
         {
             var error = $"应用验证规则 '{ruleName}' 时发生异常: {ex.Message}";
             _loggingService.LogError(error, ex, "ExtensionApi.ApplyValidationRule");
-            return new ContentPatcherMaker.Core.Validation.ValidationResult
+            return new ValidationResult
             {
                 IsValid = false,
                 Errors = [error]
@@ -279,71 +276,6 @@ public class ExtensionApiService : IExtensionApi
             _loggingService.LogError(error, ex, "ExtensionApi.FormatOutput");
             return null;
         }
-    }
-
-    /// <summary>
-    /// 注册自定义数据模型加载器
-    /// </summary>
-    public void RegisterDataModelLoader<T>(string modelName, IDataModelLoader<T> loader) where T : IDataModel
-    {
-        if (string.IsNullOrEmpty(modelName))
-            throw new ArgumentException("模型名称不能为空", nameof(modelName));
-
-        if (loader == null)
-            throw new ArgumentNullException(nameof(loader));
-
-        _dataModelLoaders[modelName] = (IDataModelLoader<IDataModel>)loader;
-        _loggingService.LogInformation($"已注册数据模型加载器: {modelName}", "ExtensionApi");
-    }
-
-    /// <summary>
-    /// 获取数据模型
-    /// </summary>
-    public IDataModelCollection<T>? GetDataModel<T>(string modelName) where T : IDataModel
-    {
-        if (string.IsNullOrEmpty(modelName))
-            return null;
-
-        if (_dataModels.TryGetValue(modelName, out var model))
-        {
-            return (IDataModelCollection<T>)model;
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// 获取所有已注册的数据模型名称
-    /// </summary>
-    public IEnumerable<string> GetRegisteredDataModelNames()
-    {
-        return _dataModelLoaders.Keys.ToList();
-    }
-
-    /// <summary>
-    /// 重新加载所有数据模型
-    /// </summary>
-    public async Task ReloadAllDataModelsAsync()
-    {
-        _loggingService.LogInformation("开始重新加载所有数据模型", "ExtensionApi");
-
-        var tasks = _dataModelLoaders.Select(async kvp =>
-        {
-            try
-            {
-                var loader = kvp.Value;
-                var model = await loader.ReloadAsync();
-                _dataModels[kvp.Key] = model;
-                _loggingService.LogDebug($"成功重新加载数据模型: {kvp.Key}", "ExtensionApi");
-            }
-            catch (Exception ex)
-            {
-                _loggingService.LogError($"重新加载数据模型失败: {kvp.Key}, 错误: {ex.Message}", ex, "ExtensionApi");
-            }
-        });
-
-        await Task.WhenAll(tasks);
-        _loggingService.LogInformation("所有数据模型重新加载完成", "ExtensionApi");
     }
 
     /// <summary>

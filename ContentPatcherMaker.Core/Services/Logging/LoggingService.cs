@@ -6,7 +6,7 @@ namespace ContentPatcherMaker.Core.Services.Logging;
 public class LoggingService
 {
     private readonly List<LogEntry> _logs = [];
-    private readonly object _lockObject = new();
+    private readonly Lock _lockObject = new();
     private LogLevel _minimumLevel = LogLevel.Information;
 
     /// <summary>
@@ -94,6 +94,9 @@ public class LoggingService
             };
 
             _logs.Add(logEntry);
+#if DEBUG
+            Console.WriteLine($"[{level}] {message}");
+#endif
 
             // 限制日志数量，避免内存泄漏
             if (_logs.Count > 10000)

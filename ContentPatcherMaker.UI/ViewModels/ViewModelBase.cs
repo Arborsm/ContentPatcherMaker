@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ContentPatcherMaker.ViewModels;
+namespace ContentPatcherMaker.UI.ViewModels;
 
 public class ViewModelBase : ObservableObject
 {

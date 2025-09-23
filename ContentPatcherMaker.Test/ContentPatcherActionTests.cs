@@ -1,7 +1,7 @@
-using Xunit;
+using ContentPatcherMaker.Core.DataModels;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services;
-using ContentPatcherMaker.Core.DataModels;
+using Xunit;
 
 namespace ContentPatcherMaker.Test;
 

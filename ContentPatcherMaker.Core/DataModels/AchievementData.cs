@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace ContentPatcherMaker.Core.DataModels;
@@ -7,43 +6,43 @@ namespace ContentPatcherMaker.Core.DataModels;
 /// 成就数据模型
 /// 基于Content/Data/Achievements.json文件
 /// </summary>
-public record AchievementData : IDataModel
+public record AchievementData
 {
     /// <summary>
     /// 成就ID
     /// </summary>
     [JsonProperty("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
 
     /// <summary>
     /// 成就名称
     /// </summary>
     [JsonProperty("name")]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// 成就描述
     /// </summary>
     [JsonProperty("description")]
-    public string? Description { get; init; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// 是否隐藏
     /// </summary>
     [JsonProperty("isHidden")]
-    public bool IsHidden { get; init; }
+    public bool IsHidden { get; set; }
 
     /// <summary>
     /// 前置成就ID
     /// </summary>
     [JsonProperty("prerequisiteId")]
-    public int PrerequisiteId { get; init; }
+    public int PrerequisiteId { get; set; }
 
     /// <summary>
     /// 图标ID
     /// </summary>
     [JsonProperty("iconId")]
-    public int IconId { get; init; }
+    public int IconId { get; set; }
 
     /// <summary>
     /// 验证成就数据
@@ -76,7 +75,7 @@ public record AchievementData : IDataModel
 /// <summary>
 /// 成就数据集合
 /// </summary>
-public class AchievementDataCollection : IDataModelCollection<AchievementData>
+public class AchievementDataCollection : DataModelCollection<AchievementData>
 {
     private readonly Dictionary<string, AchievementData> _achievements = new();
 
@@ -98,69 +97,51 @@ public class AchievementDataCollection : IDataModelCollection<AchievementData>
     /// <summary>
     /// 获取所有成就
     /// </summary>
-    public IEnumerable<AchievementData> GetAll() => _achievements.Values;
+    public override IEnumerable<AchievementData> GetAll() => _achievements.Values;
 
     /// <summary>
     /// 根据ID获取成就
     /// </summary>
     /// <param name="id">成就ID</param>
     /// <returns>成就数据，如果不存在则返回null</returns>
-    public AchievementData? GetById(string id)
-    {
-        return _achievements.TryGetValue(id, out var achievement) ? achievement : null;
-    }
+    public override AchievementData? GetById(string id) => _achievements.GetValueOrDefault(id);
 
     /// <summary>
     /// 检查成就是否存在
     /// </summary>
     /// <param name="id">成就ID</param>
     /// <returns>是否存在</returns>
-    public bool Exists(string id) => _achievements.ContainsKey(id);
+    public override bool Exists(string id) => _achievements.ContainsKey(id);
 
     /// <summary>
     /// 搜索成就
     /// </summary>
     /// <param name="predicate">搜索条件</param>
     /// <returns>匹配的成就列表</returns>
-    public IEnumerable<AchievementData> Search(Func<AchievementData, bool> predicate)
-    {
-        return _achievements.Values.Where(predicate);
-    }
+    public override IEnumerable<AchievementData> Search(Func<AchievementData, bool> predicate) => _achievements.Values.Where(predicate);
 
     /// <summary>
     /// 获取可获得的成就（非隐藏）
     /// </summary>
     /// <returns>可获得的成就列表</returns>
-    public IEnumerable<AchievementData> GetVisibleAchievements()
-    {
-        return _achievements.Values.Where(a => !a.IsHidden);
-    }
+    public IEnumerable<AchievementData> GetVisibleAchievements() => _achievements.Values.Where(a => !a.IsHidden);
 
     /// <summary>
     /// 获取隐藏的成就
     /// </summary>
     /// <returns>隐藏的成就列表</returns>
-    public IEnumerable<AchievementData> GetHiddenAchievements()
-    {
-        return _achievements.Values.Where(a => a.IsHidden);
-    }
+    public IEnumerable<AchievementData> GetHiddenAchievements() => _achievements.Values.Where(a => a.IsHidden);
 
     /// <summary>
     /// 根据前置成就获取成就
     /// </summary>
     /// <param name="prerequisiteId">前置成就ID</param>
     /// <returns>依赖该前置成就的成就列表</returns>
-    public IEnumerable<AchievementData> GetAchievementsByPrerequisite(int prerequisiteId)
-    {
-        return _achievements.Values.Where(a => a.PrerequisiteId == prerequisiteId);
-    }
+    public IEnumerable<AchievementData> GetAchievementsByPrerequisite(int prerequisiteId) => _achievements.Values.Where(a => a.PrerequisiteId == prerequisiteId);
 
     /// <summary>
     /// 获取顶级成就（无前置成就）
     /// </summary>
     /// <returns>顶级成就列表</returns>
-    public IEnumerable<AchievementData> GetTopLevelAchievements()
-    {
-        return _achievements.Values.Where(a => a.PrerequisiteId == -1);
-    }
+    public IEnumerable<AchievementData> GetTopLevelAchievements() => _achievements.Values.Where(a => a.PrerequisiteId == -1);
 }

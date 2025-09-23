@@ -1,7 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
+using ContentPatcherMaker.Core.DataModels;
 using ContentPatcherMaker.Core.Models;
 using ContentPatcherMaker.Core.Services.Logging;
-using ContentPatcherMaker.Core.DataModels;
 
 namespace ContentPatcherMaker.Core.Services;
 
@@ -478,8 +479,8 @@ public partial class StardewValleyCompatibilityService
         };
     }
 
-    [System.Text.RegularExpressions.GeneratedRegex("^[a-zA-Z0-9_-]+$")]
-    private static partial System.Text.RegularExpressions.Regex MyRegex();
+    [GeneratedRegex("^[a-zA-Z0-9_-]+$")]
+    private static partial Regex MyRegex();
 }
 
 /// <summary>
